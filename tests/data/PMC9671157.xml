@@ -1,0 +1,1619 @@
+<!DOCTYPE article
+PUBLIC "-//NLM//DTD JATS (Z39.96) Journal Archiving and Interchange DTD with MathML3 v1.3 20210610//EN" "JATS-archivearticle1-3-mathml3.dtd">
+<article xmlns:mml="http://www.w3.org/1998/Math/MathML" xmlns:xlink="http://www.w3.org/1999/xlink" dtd-version="1.3" xml:lang="en" article-type="research-article">
+  <?properties manuscript?>
+  <processing-meta base-tagset="archiving" mathml-version="3.0" table-model="xhtml" tagset-family="jats">
+    <restricted-by>pmc</restricted-by>
+  </processing-meta>
+  <front>
+    <journal-meta>
+      <journal-id journal-id-type="nlm-journal-id">101639983</journal-id>
+      <journal-id journal-id-type="pubmed-jr-id">42986</journal-id>
+      <journal-id journal-id-type="nlm-ta">Proc Conf Assoc Comput Linguist Meet</journal-id>
+      <journal-id journal-id-type="iso-abbrev">Proc Conf Assoc Comput Linguist Meet</journal-id>
+      <journal-title-group>
+        <journal-title>Proceedings of the conference. Association for Computational Linguistics. Meeting</journal-title>
+      </journal-title-group>
+      <issn pub-type="ppub">0736-587X</issn>
+    </journal-meta>
+    <article-meta>
+      <article-id pub-id-type="pmid">36404800</article-id>
+      <article-id pub-id-type="pmc">9671157</article-id>
+      <article-id pub-id-type="doi">10.18653/v1/2022.acl-long.506</article-id>
+      <article-id pub-id-type="manuscript">NIHMS1847771</article-id>
+      <article-categories>
+        <subj-group subj-group-type="heading">
+          <subject>Article</subject>
+        </subj-group>
+      </article-categories>
+      <title-group>
+        <article-title>Evaluating Factuality in Text Simplification</article-title>
+      </title-group>
+      <contrib-group>
+        <contrib contrib-type="author">
+          <name>
+            <surname>Devaraj</surname>
+            <given-names>Ashwin</given-names>
+          </name>
+          <xref rid="A1" ref-type="aff">1</xref>
+        </contrib>
+        <contrib contrib-type="author">
+          <name>
+            <surname>Sheffield</surname>
+            <given-names>William</given-names>
+          </name>
+          <xref rid="A2" ref-type="aff">2</xref>
+          <xref rid="A4" ref-type="aff">4</xref>
+        </contrib>
+        <contrib contrib-type="author">
+          <name>
+            <surname>Wallace</surname>
+            <given-names>Byron C.</given-names>
+          </name>
+          <xref rid="A3" ref-type="aff">3</xref>
+        </contrib>
+        <contrib contrib-type="author">
+          <name>
+            <surname>Li</surname>
+            <given-names>Junyi Jessy</given-names>
+          </name>
+          <xref rid="A4" ref-type="aff">4</xref>
+        </contrib>
+      </contrib-group>
+      <aff id="A1"><label>1</label>Computer Science, The University of Texas at Austin</aff>
+      <aff id="A2"><label>2</label>Mathematics, The University of Texas at Austin</aff>
+      <aff id="A3"><label>3</label>Khoury College of Computer Sciences, Northeastern University</aff>
+      <aff id="A4"><label>4</label>Linguistics, The University of Texas at Austin</aff>
+      <author-notes>
+        <corresp id="CR1">
+<email>ashwin.devaraj@utexas.edu</email>
+</corresp>
+      </author-notes>
+      <pub-date pub-type="nihms-submitted">
+        <day>5</day>
+        <month>11</month>
+        <year>2022</year>
+      </pub-date>
+      <pub-date pub-type="ppub">
+        <month>5</month>
+        <year>2022</year>
+      </pub-date>
+      <pub-date pub-type="pmc-release">
+        <day>17</day>
+        <month>11</month>
+        <year>2022</year>
+      </pub-date>
+      <volume>2022</volume>
+      <fpage>7331</fpage>
+      <lpage>7345</lpage>
+      <permissions>
+        <license>
+          <license-p>This file is available for text mining. It may also be used consistent with the principles of fair use under the copyright law.</license-p>
+        </license>
+      </permissions>
+      <abstract id="ABS1">
+        <p id="P1">Automated <italic toggle="yes">simplification</italic> models aim to make input texts more readable. Such methods have the potential to make complex information accessible to a wider audience, e.g., providing access to recent medical literature which might otherwise be impenetrable for a lay reader. However, such models risk introducing errors into automatically simplified texts, for instance by inserting statements unsupported by the corresponding original text, or by omitting key information. Providing more readable but inaccurate versions of texts may in many cases be worse than providing no such access at all. The problem of factual accuracy (and the lack thereof) has received heightened attention in the context of summarization models, but the factuality of automatically simplified texts has not been investigated. We introduce a taxonomy of errors that we use to analyze both references drawn from standard simplification datasets and state-of-the-art model outputs. We find that errors often appear in both that are not captured by existing evaluation metrics, motivating a need for research into ensuring the factual accuracy of automated simplification models.</p>
+      </abstract>
+    </article-meta>
+  </front>
+  <body>
+    <sec id="S1">
+      <label>1</label>
+      <title>Introduction</title>
+      <p id="P2">Simplification methods aim to make texts more readable without altering their meaning. This may permit information accessibility to a wide range of audiences, e.g., non-native speakers (<xref rid="R48" ref-type="bibr">Yano et al., 1994</xref>), children (<xref rid="R6" ref-type="bibr">De Belder and Moens, 2010</xref>), as well as individuals with aphasia (<xref rid="R3" ref-type="bibr">Carroll et al., 1998</xref>) and dyslexia (<xref rid="R37" ref-type="bibr">Rello et al., 2013</xref>). Simplification may also help laypeople digest technical information that would otherwise be impenetrable (<xref rid="R5" ref-type="bibr">Damay et al., 2006</xref>; <xref rid="R7" ref-type="bibr">Devaraj et al., 2021</xref>).</p>
+      <p id="P3">Recent work has made substantial progress by designing sequence-to-sequence neural models that “translate” complex sentences into simplified versions (<xref rid="R46" ref-type="bibr">Xu et al., 2016</xref>; <xref rid="R1" ref-type="bibr">Alva-Manchego et al., 2020</xref>). An important but mostly overlooked aspect of automated simplification—especially in the conditional text generation regime—is whether outputs are <italic toggle="yes">faithful</italic> to the inputs that they are simplifying. Consider, for example, automatically simplifying medical texts (<xref rid="R7" ref-type="bibr">Devaraj et al., 2021</xref>): Presenting individuals with readable medical information that contains factual errors is probably worse than providing no such access at all.</p>
+      <p id="P4">Recent work has acknowledged factuality and faithfulness as key issues to be addressed in other conditional generation tasks like summarization (<xref rid="R21" ref-type="bibr">Kryscinski et al., 2020a</xref>; <xref rid="R30" ref-type="bibr">Maynez et al., 2020</xref>; <xref rid="R32" ref-type="bibr">Pagnoni et al., 2021</xref>; <xref rid="R14" ref-type="bibr">Goyal and Durrett, 2021</xref>), yet so far little research has thoroughly studied the kinds of errors that simplification datasets and system outputs exhibit. This work seeks to close this research gap.</p>
+      <p id="P5"><xref rid="T5" ref-type="table">Table 1</xref> shows examples of generated outputs from existing simplification systems, and these clearly illustrate that factuality is an issue. We conduct multi-dimensional analyses based on the edit nature of simplification (<xref rid="R45" ref-type="bibr">Xu et al., 2015</xref>; <xref rid="R9" ref-type="bibr">Dong et al., 2019</xref>) and define a small typology of (potential) factual errors in the context of simplification. <italic toggle="yes">Inserting</italic> information can be useful to define jargon and provide explanatory content, but introducing irrelevant or erroneous content (“hallucinating”) is bad (e.g., examples 1–2 in <xref rid="T5" ref-type="table">Table 1</xref>). <italic toggle="yes">Omitting</italic> information related to the main entity or event could lead to a change in how the text is understood (e.g., example 5 in <xref rid="T5" ref-type="table">Table 1</xref>). Finally, making inappropriate <italic toggle="yes">substitutions</italic> can result in inconsistencies (e.g., examples 3–4 in <xref rid="T5" ref-type="table">Table 1</xref>). Together these dimensions represent the precision, recall, and accuracy of information conveyed in simplified texts.</p>
+      <p id="P6">We collect human ratings of factuality for these aspects on two widely used simplification corpora: Wikilarge (<xref rid="R50" ref-type="bibr">Zhang and Lapata, 2017</xref>) and Newsela (<xref rid="R45" ref-type="bibr">Xu et al., 2015</xref>). Automatically aligned sentences from these two datasets are typically used to train and evaluate supervised simplification systems. We find that errors occur frequently in the validation and test sets of both datasets, although they are more common in Newsela (<xref rid="S11" ref-type="sec">Section 6</xref>).</p>
+      <p id="P7">We then evaluate outputs from several modern simplification models (<xref rid="R50" ref-type="bibr">Zhang and Lapata, 2017</xref>; <xref rid="R9" ref-type="bibr">Dong et al., 2019</xref>; <xref rid="R29" ref-type="bibr">Martin et al., 2020</xref>; <xref rid="R28" ref-type="bibr">Maddela et al., 2021</xref>), as well as a fine-tuned T5 (<xref rid="R35" ref-type="bibr">Raffel et al., 2020</xref>) model. Compared to RNN-based models, Transformer-based ones tend to have less severe deletion and substitution errors; however, the pre-trained T5 produced more hallucinations on the more abstractive Newsela dataset. We find that existing quality metrics for simplification such as SARI (<xref rid="R46" ref-type="bibr">Xu et al., 2016</xref>) correlate poorly with factuality. Although deletion errors correlate with existing semantic similarity measures, they fail to capture insertion and substitution.</p>
+      <p id="P8">As an initial step towards automatic factuality assessment in simplification, we train RoBERTa (<xref rid="R27" ref-type="bibr">Liu et al., 2019</xref>)-based classification models using our annotated data, and use synthetically generated data to supplement training. We demonstrate that this is a challenging task.</p>
+      <p id="P9">Our code and data can be found at <ext-link xlink:href="https://github.com/AshOlogn/Evaluating-Factuality-in-Text-Simplification" ext-link-type="uri">https://github.com/AshOlogn/Evaluating-Factuality-in-Text-Simplification</ext-link>.</p>
+    </sec>
+    <sec id="S2">
+      <label>2</label>
+      <title>Related Work</title>
+      <p id="P10">Factuality (and the lack thereof) has been identified as critical in recent work in unsupservised simplification (<xref rid="R23" ref-type="bibr">Laban et al., 2021</xref>) and medical simplification (<xref rid="R7" ref-type="bibr">Devaraj et al., 2021</xref>). <xref rid="R15" ref-type="bibr">Guo et al. (2018)</xref> incorporated textual entailment into their simplification task via an auxillary loss. They showed that this improved simplifications with respect to standard metrics and human assessments of output fluency, adequacy, and simplicity, but they did not explicitly evaluate the resultant factuality of outputs, which is our focus.</p>
+      <p id="P11">Given the paucity of prior work investigating factuality in the context of automated simplification, the most relevant thread of research to the present effort is work on measuring (and sometimes improving) the factuality in outputs from neural <italic toggle="yes">summarization</italic> systems. <xref rid="R11" ref-type="bibr">Falke et al. (2019a)</xref> proposed using textual entailment predictions as a means to identify errors in generated summaries. Elsewhere, <xref rid="R21" ref-type="bibr">Kryscinski et al. (2020a)</xref> used weak supervision—heuristic transformations used to intentionally introduce factual errors—to train a model to identify inaccuracies in outputs.</p>
+      <p id="P12"><xref rid="R30" ref-type="bibr">Maynez et al. (2020)</xref> enlisted humans to evaluate <italic toggle="yes">hallucinations</italic> (content found in a summary but not in its corresponding input) in automatically generated outputs. They report that for models trained on the XSUM dataset (<xref rid="R31" ref-type="bibr">Narayan et al., 2018</xref>), over 70% of summaries contain hallucinations. This corroborates other recent work (<xref rid="R11" ref-type="bibr">Falke et al., 2019a</xref>; <xref rid="R41" ref-type="bibr">Wallace et al., 2021</xref>), which has also found that ROUGE is a weak gauge of factuality. <xref rid="R42" ref-type="bibr">Wang et al. (2020a)</xref> proposed <italic toggle="yes">QAGS</italic>, which uses automated question-answering to measure the consistency between reference and generated summaries. Elsewhere, <xref rid="R47" ref-type="bibr">Xu et al. (2020)</xref> proposed evaluating textual factuality independent of surface realization via Semantic Role Labeling (SRL). Finally, <xref rid="R32" ref-type="bibr">Pagnoni et al. (2021)</xref> introduced the FRANK (meta-)benchmark for evaluating factuality metrics for summarization. While FRANK is tailored towards summarization-specific error categories including discourse, our ontology broadly reflects the goal of simplification (retaining content with simpler language) from the perspective of information precision, recall, and accuracy.</p>
+    </sec>
+    <sec id="S3">
+      <label>3</label>
+      <title>Information Errors in Simplification</title>
+      <p id="P13">Above we reviewed various recently proposed frameworks and methods for assessing the factual accuracy of automatically-generated <italic toggle="yes">summaries</italic>. We aim in this work to similarly codify content errors in <italic toggle="yes">simplification</italic>.</p>
+      <p id="P14">Below we describe broad categories of errors<sup><xref rid="FN1" ref-type="fn">1</xref></sup> we observed in simplification datasets and system outputs, and then use these to design annotation guidelines that formalize accuracy assessment (<xref rid="S8" ref-type="sec">Section 5</xref>). Our analysis revealed three broad categories, illustrated in <xref rid="T6" ref-type="table">Table 2</xref>:
+<list list-type="order" id="L2"><list-item><p id="P15"><bold>Information Insertion:</bold> This occurs when information not mentioned in the complex sentence is inserted into—or <italic toggle="yes">hallucinated</italic> in—its simplified counterpart. The insertion may be as small as mentioning a proper noun not in the complex sentence, or as large as introducing a new main idea. This category is similar to <italic toggle="yes">extrinsic hallucination</italic> in the summarization literature (<xref rid="R30" ref-type="bibr">Maynez et al., 2020</xref>; <xref rid="R14" ref-type="bibr">Goyal and Durrett, 2021</xref>).</p></list-item><list-item><p id="P16"><bold>Information Deletion:</bold> This is when information in the complex sentence is omitted from the simplified sentence. A minor example of this is the reverse of the insertion case above, where an entity is mentioned by name in the complex sentence but only by pronoun in the simplified sentence.</p></list-item><list-item><p id="P17"><bold>Information Substitution:</bold> This is when information in the complex sentence is modified in the simplified sentence such that it changes the meaning. This category is broad, encompassing both alterations to the simplified sentence that directly contradict information in the complex sentence, and those that do not.</p></list-item></list></p>
+      <p id="P18">Because errors can co-occur, we adopt a multi-dimensional labeling scheme that requires a different label to be provided for each category. Each category label specifies the severity of the error: <bold>0–no/trivial change; 1–nontrivial but preserves main idea; 2–doesn’t preserve main idea; −1–gibberish, specified in</bold>
+<xref rid="F1" ref-type="fig">Figure 1</xref>. <xref rid="T5" ref-type="table">Table 1</xref> shows level-2 examples from system outputs for insertion (examples 1–2), substitution (examples 3–4), and deletion (example 5). Reference examples are discussed in <xref rid="S11" ref-type="sec">Section 6</xref>.</p>
+      <sec id="S4">
+        <title>Interpretation as Precision and Recall</title>
+        <p id="P19">In simplification one attempts to rewrite a given complex sentence to be simpler while preserving most of the information that it contains. The categories above can be interpreted as errors in information precision (the fraction of content that also appears in the complex sentence) and recall (the fraction of content in the complex sentence preserved during simplification). With this interpretation, a “false positive” (affecting <italic toggle="yes">precision</italic>) occurs when the simplified sentence contains information not present in the source, i.e., introduces a “hallucination”. And a “false negative” (hindering <italic toggle="yes">recall</italic>) is where the simplified sentence omits key information in the source.</p>
+      </sec>
+    </sec>
+    <sec id="S5">
+      <label>4</label>
+      <title>Data and Models</title>
+      <p id="P20">We annotate data from the simplification datasets themselves (we will call these <italic toggle="yes">reference</italic> examples), as well as from model-generated text. Thus we assess how the distribution of errors in the references compares to that of errors in system outputs and glean insights that might relate model architecture and training choices to the kinds of errors produced.</p>
+      <sec id="S6">
+        <title>Datasets.</title>
+        <p id="P21">We annotated examples from the Wikilarge and Newsela (<xref rid="R45" ref-type="bibr">Xu et al., 2015</xref>; <xref rid="R50" ref-type="bibr">Zhang and Lapata, 2017</xref>) datasets. These are commonly used in the literature, and so results have been reported on these corpora for a diverse collection of models. Wikilarge comprises 296K roughly-aligned sentences pairs from English Wikipedia and Simple English Wikipedia. Newsela (<xref rid="R45" ref-type="bibr">Xu et al., 2015</xref>) consists of 96K sentence pairs extracted from a dataset of news stories rewritten at 4 reading levels by professionals. To make analysis tractable in this work, we examine the simplest level for Newsela.</p>
+        <p id="P22">We annotated 400 pairs of (complex, simplified) sentences each from the validation and test sets for Newsela. For Wikilarge, we annotated 400 pairs from the validation set and 359 from the test set (this constitutes the entire test set).</p>
+      </sec>
+      <sec id="S7">
+        <title>Simplification Models.</title>
+        <p id="P23">We annotated outputs generated by a collection of models on the same validation and test examples from Wikilarge and Newsela, respectively. We selected a set of models intended to be representative of different architectures and training methods.</p>
+        <p id="P24">More specifically, for RNN-based models we considered <monospace>Dress</monospace> (<xref rid="R50" ref-type="bibr">Zhang and Lapata, 2017</xref>) and <monospace>EditNTS</monospace> (<xref rid="R9" ref-type="bibr">Dong et al., 2019</xref>). <monospace>Dress</monospace> is an LSTM model trained using REINFORCE (<xref rid="R44" ref-type="bibr">Williams, 1992</xref>) to minimize a reward function consisting of meaning preservation, simplicity, and fluency terms. <monospace>EditNTS</monospace> represents each sentence pair as a sequence of edit operations and directly learns these operations to perform simplification.</p>
+        <p id="P25">For Transformer-based architectures we evaluated two previously proposed models: <monospace>Access</monospace> (<xref rid="R29" ref-type="bibr">Martin et al., 2020</xref>) and <monospace>ControlTS</monospace> (<xref rid="R28" ref-type="bibr">Maddela et al., 2021</xref>). <monospace>Access</monospace> trains a randomly-initialized Transformer to generate simplifications parametrized by control tokens influencing traits like lexical complexity and length compression. <monospace>ControlTS</monospace> is a hybrid method that generates simplification candidates using grammatical rules and then applies a BERT-based (<xref rid="R8" ref-type="bibr">Devlin et al., 2019</xref>) paraphrasing model. In addition, we also fine-tuned <monospace>T5</monospace> (<xref rid="R35" ref-type="bibr">Raffel et al., 2020</xref>) for the simplification task, detailed in <xref rid="APP1" ref-type="app">Appendix A</xref>. <monospace>T5</monospace> is a Transformer-based model jointly pretrained both on unsupervised language modeling objectives and a host of supervised tasks including summarization and translation, all framed as text-to-text problems.</p>
+      </sec>
+    </sec>
+    <sec id="S8">
+      <label>5</label>
+      <title>Labeling with Mechanical Turk</title>
+      <sec id="S9">
+        <title>Annotation Procedure</title>
+        <p id="P26">We use Amazon Mechanical Turk to acquire labels for reference examples from datasets, and for model-generated simplifications. To ensure that only annotators who understood our labeling scheme would be included, we released a qualification task consisting of 10 sentence pairs with perfect agreement among two of the authors, with detailed explanation of the labeling scheme, and required that annotators achieve at least 75% accuracy on this set.</p>
+        <p id="P27">After worker qualification, examples were released to only qualified workers, and each example was annotated by 3 workers. The final label for each category (insertion, deletion, substitution) was set to the majority label if one existed. If every annotator provided a different label for a given category, we removed this example for purposes of this category. For example, if annotators provided insertion labels of {1, 1, 2} and deletion labels of {2; 1; 0} for a specific instance, then this would not be assigned a deletion label, but would receive a “final” insertion label of 1. Workers were compensated $10.00 per hour on the annotation task.</p>
+      </sec>
+      <sec id="S10">
+        <title>Inter-annotator Agreement.</title>
+        <p id="P28">We quantified the degree of inter-annotator agreement using 3 metrics, each capturing a different dimension of labeling consistency for each category: First, we report the percentage of examples that had a well-defined majority label for each category. Most annotators agreed on labels for the majority of examples (first column in <xref rid="T7" ref-type="table">Table 3</xref>), meaning that very few annotations had to be discarded for any category.</p>
+        <p id="P29">Because 0 was the most common label for all 3 categories, especially for the reference examples from the datasets, we also recorded the percentage of examples with <italic toggle="yes">majority non-zero annotations</italic> that also have a well-defined majority label. For example, the labels {0, 1, 2} are majority non-zero but do correspond to a well-defined majority label, while {0, 1, 1} satisfies both conditions. <xref rid="T7" ref-type="table">Table 3</xref>(column 2) indicates that even among examples where most annotators agree that there is an error, the majority agree on a specific label of 1, 2, or −1.</p>
+        <p id="P30">We also measured Krippendorff’s alpha (<xref rid="R18" ref-type="bibr">Krippendorff, 1970</xref>) with an ordinal level of measurement (assigning the −1 label a value of 3 to indicate maximum severity). Dataset annotations for insertion enjoy moderate agreement (<italic toggle="yes">α</italic> = 0.425), those for deletion imply substantial agreement (<italic toggle="yes">α</italic> = 0.639), and those for substitution exhibit fair agreement (<italic toggle="yes">α</italic> = 0.200) (<xref rid="R2" ref-type="bibr">Artstein and Poesio, 2008</xref>). The latter is possibly due to the clear majority label of 0 among substitution labels.</p>
+        <p id="P31">The % majority agreement scores indicate that although the annotation scheme involves a degree of subjectivity in distinguishing between minor and major errors, with proper screening crowdsource workers can label text pairs with our annotation scheme consistently enough so that a well-defined label can be assigned to the vast majority of examples.</p>
+      </sec>
+    </sec>
+    <sec id="S11">
+      <label>6</label>
+      <title>Factuality of Reference Examples</title>
+      <sec id="S12">
+        <title>Quantitative Analysis</title>
+        <p id="P32"><xref rid="T8" ref-type="table">Table 4</xref> reports distributions of acquired labels for information insertion, deletion, and substitution errors over the annotated reference examples. Deletion errors are far more common than insertion errors in both datasets, though Wikilarge has fewer of both than Newsela. This is unsurprising, as one of the motivations for introducing the Newsela dataset was that it contains shorter and less syntactically-complex simplifications. Reassuringly, there were very few substitution errors found in either dataset.</p>
+        <p id="P33"><xref rid="T9" ref-type="table">Table 5</xref> shows a clear positive correlation between length reduction and the severity of deletion errors present. As expected, sentences are shortened more substantially in Newsela than in Wikilarge. One the other hand, while <xref rid="T9" ref-type="table">Table 5</xref> indicates that the examples with nonzero insertion labels collectively see a greater increase in length than those with no insertion errors, the mean length increase for level 2 examples is smaller than that for level 1.</p>
+        <p id="P34">Simplifications in Newsela are more abstractive (<xref rid="R45" ref-type="bibr">Xu et al., 2015</xref>), i.e., simplified sentences copy fewer phrases verbatim from inputs. This can be quantified via normalized edit distance (<xref rid="R24" ref-type="bibr">Levenshtein, 1965</xref>), which yielded a median of 0.46 for Newsela examples compared to the 0.38 for Wikilarge (after noise filtering described in <xref rid="APP2" ref-type="app">Appendix B</xref>). <xref rid="T9" ref-type="table">Table 5</xref> indicates that on average the more erroneous the insertion or deletion, the greater the normalized edit distance between the original and simplified sentences.</p>
+        <p id="P35">These results suggest that while reducing sentence length and rewording can be beneficial (<xref rid="R17" ref-type="bibr">Klare, 1963</xref>), too much can negatively impact factuality.</p>
+      </sec>
+      <sec id="S13">
+        <title>Qualitative Analysis</title>
+        <p id="P36">We also manually inspected insertion and deletion errors in both datasets, revealing clear patterns of deletion errors. Label 1 deletions by definition involve omissions of nonsalient details that do not much affect the meaning of the sentence, e.g.:
+<disp-quote id="Q1"><p id="P37"><bold>Original:</bold> Mayfield wrote and sang on a string of message-oriented records, <italic toggle="yes">including “Keep on Pushing” and “People Get Ready.”</italic></p><p id="P38"><bold>Simplified:</bold> Mayfield wrote and sang on records that had a message.</p><attrib>(Newsela, deletion-1)</attrib></disp-quote></p>
+        <p id="P39">Label 2 deletions have two common manifestations across the datasets. The first involves deletion of the main clause and subsequent promotion of a secondary clause:
+<disp-quote id="Q2"><p id="P40"><bold>Original:</bold> “Until you know how the sausage is made, you don’t know how expensive it is to make that sausage,” said Josh Updike, creative director of Rethink Leisure &amp; Entertainment, <italic toggle="yes">which is working on several projects in China and elsewhere in Asia</italic>.</p><p id="P41"><bold>Simplified:</bold> The company is working on several projects in China and Asia.</p><attrib>(Newsela, deletion-2)</attrib></disp-quote>
+Another common type of label 2 deletion involves removing a key (though often small) phrase that effectively reframes the entire sentence, e.g.:
+<disp-quote id="Q3"><p id="P43"><bold>Original:</bold> You may add a passage of up to five words as a Front-Cover Text, and a passage of up to 25 words as a Back-Cover Text, to the end of the list of Cover Texts <italic toggle="yes">in the Modified Version</italic>.</p><p id="P44"><bold>Simplified:</bold> You may add a passage of up to five words as a Front-Cover Text and a passage of up to 25 words as a Back-Cover Text to the end of the list of Cover Texts.</p><attrib>(Wikilarge, deletion-2)</attrib></disp-quote>
+By deleting <italic toggle="yes">in the Modified Version</italic> (emphasis ours), the simplified sentence erroneously states that one may add front-and back-cover passages to the list of cover texts to the unmodified version, which is implicitly forbidden in the original.</p>
+        <p id="P46">Because of the small number of insertion errors on Wikilarge, we were unable to identify any meaningful trends. However, we observed patterns in Newsela for both levels 1 and 2 of insertions, pertaining to quotative phrases (e.g., inserting <italic toggle="yes">“experts said”</italic> to the beginning of a sentence even though the original sentence did not mention an expert), and temporal phrases, e.g.:
+<disp-quote id="Q4"><p id="P47"><bold>Original:</bold> They could not afford to pay their son’s roughly $10,000 cost for classes at the University of Texas at Austin.</p><p id="P48"><bold>Simplified:</bold>
+<italic toggle="yes">When he grew up</italic>, they could not afford to pay $10,000 for him to go to the University of Texas at Austin.</p><attrib>(Newsela, insertion-1)</attrib></disp-quote></p>
+        <p id="P49">Another error trend pertains to a change in specificity:
+<disp-quote id="Q5"><p id="P50"><bold>Original:</bold> Mutanabbi Street has always been <italic toggle="yes">a hotbed of dissent</italic>.</p><p id="P51"><bold>Simplified:</bold> Mutanabbi Street has always been <italic toggle="yes">a place where protest marches are held</italic>.</p><attrib>(Newsela, insertion-2)</attrib></disp-quote></p>
+        <p id="P52">We observed more contextually related errors for Newsela due to its style and its simplification process. Newsela documents were edited by professionals who rewrote the entire original document, and so information inserted or deleted could move from or to adjacent sentences. This preserves information for the whole document but causes problems at the sentence level. Also, compared to Wikilarge, Newsela’s news articles naturally involve more complex discourse (<xref rid="R40" ref-type="bibr">Van Dijk, 2013</xref>). These factors lead to relatively underspecified sentences (<xref rid="R26" ref-type="bibr">Li et al., 2016</xref>) in the simplified text when they are taken out-of-context during training and evaluation. This observation calls for the inclusion of document context during simplification (<xref rid="R39" ref-type="bibr">Sun et al., 2020</xref>), or performing decontextualization (<xref rid="R4" ref-type="bibr">Choi et al., 2021</xref>) before simplifying.</p>
+      </sec>
+    </sec>
+    <sec id="S14">
+      <label>7</label>
+      <title>Factuality of System Outputs</title>
+      <p id="P53"><xref rid="T10" ref-type="table">Table 6</xref> shows the distributions of insertion, deletion, and substitution errors annotated in system outputs.<sup><xref rid="FN2" ref-type="fn">2</xref></sup> It also shows the standard simplification evaluation metric—SARI scores (<xref rid="R46" ref-type="bibr">Xu et al., 2016</xref>)—for the annotated set. For the three models that reported both Wikilarge and Newsela outputs, the relative frequency of deletion errors between the two datasets appears to be preserved in model outputs, though for the RNN models errors are milder on Newsela and amplified on Wikilarge.</p>
+      <p id="P54">A clear relationship between dataset and system output distributions does not exist for insertion and substitution errors. For <monospace>Dress</monospace> and <monospace>EditNTS</monospace>, this is due to the fact that the minor differences in insertion errors are dwarfed by the larger number of −1 (gibberish) labels assigned to Newsela outputs. Interestingly, outputs from the <monospace>T5</monospace> model were rarely labeled as −1 errors, so the difference in insertion errors is more apparent. In the case of substitution, the Newsela outputs for <monospace>Dress</monospace> and <monospace>T5</monospace> models show much higher rates of substitution errors than the Wikilarge outputs, despite the opposite being true for the datasets themselves. <monospace>EditNTS</monospace> does not show the same pattern, but again, the high rate of −1 errors subsumes every other trend. One possible reason for this phenomenon could be that the higher abstractiveness of Newsela encourages models to rewrite the input sentence to a greater extent and destroy the original meaning in the process. In general the models produce substitution errors more frequently than are found in the dataset, meaning that they are introduced by the models themselves and not merely learned from the data.</p>
+      <sec id="S15">
+        <title>Model comparisons</title>
+        <p id="P55">There are a few differences in error distributions between the RNN-based and Transformer-based models, and between pre-trained vs. non-pretrained Transformer models. All three Transformer models have less severe deletion errors than the RNN models on Wikilarge, and in addition <monospace>T5</monospace> has lower deletion error rates on Newsela. Perhaps the most striking trend is that the Transformer models have far lower −1 gibberish errors than RNN-based models, even <monospace>Access</monospace>, which is not pre-trained on the language modeling task. <monospace>T5</monospace>—which has been pre-trained on large amounts of data—produced more insertion errors, while <monospace>Access</monospace> produced more substitution errors.</p>
+      </sec>
+      <sec id="S16">
+        <title>Quantitative Analysis</title>
+        <p id="P56">We explore the relationships between the factuality annotations of system outputs and both length reduction and normalized edit distance. We briefly describe our findings here and defer numerical details to <xref rid="APP3" ref-type="app">Appendix C</xref>.</p>
+        <p id="P57">For every model except <monospace>Access</monospace>, there is a clear positive correlation between the severity of deletion errors and the degree of length reduction between the complex input and generated simplification. This is consistent with the trend observed for the datasets. No consistent relationships between length change and levels of insertion and substitution errors are exhibited by the system outputs. As in the case of length reduction, mean edit distances increase with the severity of deletion error with no consistent trends found for insertion and substitution labels.</p>
+      </sec>
+      <sec id="S17">
+        <title>Qualitative analysis</title>
+        <p id="P58">We also manually inspect model outputs, detailed in <xref rid="APP4" ref-type="app">Appendix D</xref>, and summarize main observations here. As in the data, models also produce deletions ranging from single words and short phrases to clauses. For the two RNN models, <monospace>DRESS</monospace> and <monospace>EditNTS</monospace>, level 1 errors primarily consist of shorter deletion errors, which include pronoun errors and modifiers. Level 2 errors are almost always longer deletions, yet we did not observe the promotion of a subordinate clause to a main one as in the references, suggesting that models tend to follow syntactic rules more strictly. For <monospace>T5</monospace>, we additionally observe level 2 errors in which the model deletes a semantically critical word. We observed more error variability in the other two transformer models, <monospace>Access</monospace> and <monospace>ControlTS</monospace>. Models introduced varying numbers of insertion and substitution errors, but in inspection we did not observe any clear properties of these as a function of model type.</p>
+      </sec>
+    </sec>
+    <sec id="S18">
+      <label>8</label>
+      <title>Comparison with Existing Metrics</title>
+      <sec id="S19">
+        <title>Relationship to SARI.</title>
+        <p id="P59">SARI is the most popular metric used to evaluate text simplification models (<xref rid="R46" ref-type="bibr">Xu et al., 2016</xref>). For each model, we report Spearman’s rank correlation coefficient (<xref rid="R38" ref-type="bibr">Spearman, 1904</xref>) between SARI and each error category. As <xref rid="T11" ref-type="table">Table 7</xref> reports, there is only a weak correlation between SARI and the prevalence of information errors, and both the direction and magnitude of the correlation are highly dependent on model and dataset. This lack of correlation is unsurprising since SARI uses lexical overlap between the generated text with the reference text pair to judge simplification quality. This parallels the case with ROUGE in summarization (<xref rid="R11" ref-type="bibr">Falke et al., 2019a</xref>; <xref rid="R30" ref-type="bibr">Maynez et al., 2020</xref>; <xref rid="R41" ref-type="bibr">Wallace et al., 2021</xref>).</p>
+      </sec>
+      <sec id="S20">
+        <title>Measures of Semantic Similarity.</title>
+        <p id="P60">Many existing text simplification systems attempt to address the problem of meaning preservation by using a semantic similarity score either directly in their loss/reward function or in a candidate ranking step (<xref rid="R50" ref-type="bibr">Zhang and Lapata, 2017</xref>; <xref rid="R19" ref-type="bibr">Kriz et al., 2019</xref>; <xref rid="R51" ref-type="bibr">Zhao et al., 2020</xref>; <xref rid="R28" ref-type="bibr">Maddela et al., 2021</xref>). Additionally, some of these metrics have been included in recent factuality evaluation platforms in summarization (<xref rid="R32" ref-type="bibr">Pagnoni et al., 2021</xref>). We explore the extent to which existing similarity methods detect information errors as outlined in our annotation scheme. We consider: (1) Jaccard similarity; (2) cosine similarity between averaged GloVe (<xref rid="R33" ref-type="bibr">Pennington et al., 2014</xref>) or ELMo (<xref rid="R34" ref-type="bibr">Peters et al., 2018</xref>) embeddings of the original and simplified sentences; (3) cosine similarity between Sentence-BERT (<xref rid="R36" ref-type="bibr">Reimers and Gurevych, 2019</xref>) embeddings; and (4) BERTScore (<xref rid="R49" ref-type="bibr">Zhang et al., 2019</xref>).</p>
+        <p id="P61">As <xref rid="T12" ref-type="table">Table 8</xref> indicates, the semantic similarity measures explored capture deletion errors quite well, while being a moderate indicator of insertion errors and a very weak one for substitution errors. Since deletion and substitution errors are common in most of the models we evaluated, the results indicate that better methods are needed to detect unacceptable deletions and intrinsic hallucinations in simplification outputs.</p>
+      </sec>
+      <sec id="S21">
+        <title>Measures of Factuality.</title>
+        <p id="P62">As in text simplification, the most common evaluation metrics used in text summarization like ROUGE do not adequately account for the factuality of model generations with respect to the input texts (<xref rid="R20" ref-type="bibr">Kryscinski et al., 2019</xref>). For this reason, recent works have proposed model-based metrics to automatically assess factuality (<xref rid="R12" ref-type="bibr">Falke et al., 2019b</xref>; <xref rid="R10" ref-type="bibr">Durmus et al., 2020</xref>; <xref rid="R43" ref-type="bibr">Wang et al., 2020b</xref>; <xref rid="R22" ref-type="bibr">Kryscinski et al., 2020b</xref>; <xref rid="R13" ref-type="bibr">Goyal and Durrett, 2020</xref>). We consider the following systems: (1) FACT-CC, which is a BERT-based model trained on a synthetic dataset to classify text pairs as being factually inconsistent or not (<xref rid="R22" ref-type="bibr">Kryscinski et al., 2020b</xref>), and (2) DAE, which is another BERT-based model that classifies each dependency arc in the model output as entailing the source text or not (<xref rid="R13" ref-type="bibr">Goyal and Durrett, 2020</xref>). More specifically, for FACT-CC we use the model’s probability that each simplification example is inconsistent. For DAE we use the average of the lowest <italic toggle="yes">k</italic> probabilities that a dependency arc in the target sentence does not entail the source for <italic toggle="yes">k</italic> = 1, 3, 5.</p>
+        <p id="P63">As <xref rid="T13" ref-type="table">Table 9</xref> indicates, both FACT-CC and DAE’s outputs correlate less with insertion and deletion annotations than even surface-level measures of semantic similarity like Jaccard similarity, though DAE scores correlate better with substitution errors than do F<sc>act</sc>-CC and all evaluated measures of semantic similarity.</p>
+      </sec>
+    </sec>
+    <sec id="S22">
+      <label>9</label>
+      <title>Automatic Factuality Assessment</title>
+      <p id="P64">Since manual annotation is costly and time-consuming, as a first step towards large-scale evaluation, we present an initial attempt at automating factuality assessment by training a model on human annotations. To supplement training, we explore methods of generating synthetic data to improve model performance.</p>
+      <p id="P65">We framed automatic factuality assessment as a classification task in which a separate classifier is trained for each category (Insertion, Deletion, and Substitution), for each of the levels 0, 1, and 2. We treat the annotations used in our previous analyses as the test set and have additional data annotated to function as the training set for this task. We therefore collected a total of 1004 additional examples annotated across Wikilarge, Newsela, <monospace>Access</monospace> outputs on Wikilarge, and <monospace>T5</monospace> outputs on Newsela and Wikilarge. We fine-tuned RoBERTa (<xref rid="R27" ref-type="bibr">Liu et al., 2019</xref>) with a classification head.</p>
+      <sec id="S23">
+        <title>Synthetic Data Generation</title>
+        <p id="P66">As <xref rid="T14" ref-type="table">Table 10</xref> indicates, the validation dataset is both small and highly imbalanced, with very few level 2 insertion and substitution errors. To alleviate this issue, we experimented with a few methods of generating synthetic insertion and substitution errors on which to pretrain the model. We accomplished this by modifying each of the complex sentences in the validation set. To generate insertion errors, we replace names with pronouns and remove phrases from the source text to create target texts (information deletions) and then swap the source and target to produce information insertions. To generate substitutions, we change numbers in the source text, negate statements, and used BERT masking to perturb information in the sentence. We generated 10K examples in total; <xref rid="S33" ref-type="sec">Appendix E.1</xref> describes these methods in greater detail.</p>
+      </sec>
+      <sec id="S24">
+        <title>Training and Evaluation</title>
+        <p id="P67">The model is evaluated using the F1-scores with respect to each class (0,1,2), and when selecting checkpoints during training, the average of the label 1 and 2 F1 scores is used. The deletion model was trained directly on its training data, whereas the insertion and substitution models were initially pretrained on the synthetic datasets. Training details are provided in <xref rid="S40" ref-type="sec">Appendix E.3</xref>.</p>
+      </sec>
+      <sec id="S25">
+        <title>Results</title>
+        <p id="P68"><xref rid="T14" ref-type="table">Table 10</xref> shows the test F1 scores achieved by the three classifiers. As expected, the deletion classifier achieved the best 1 and 2 F1 scores, likely due to the fact that the training dataset had plenty of level 1 and 2 deletion errors. Although the insertion and substitution datasets are similarly skewed, the insertion classifier significantly outperforms the substitution one. We found that using synthetic data is useful: without it, F1s for levels 1 and/or 2 are near 0 for insertion and substitution. Even with data augmentation, however, detecting errors is a challenging task.</p>
+      </sec>
+    </sec>
+    <sec id="S26">
+      <label>10</label>
+      <title>Conclusion</title>
+      <p id="P69">We have presented an evaluation of the factuality of automated simplification corpora and model outputs, using an error typology with varied degrees of severity. We found that errors appear frequently in both references and generated outputs. In the datasets, deletion errors are quite frequent, with Newsela containing more than Wikilarge. The system outputs indicate that the models also tend to delete information, which is likely a behavior learned from the training data. Model outputs contain more substitution errors than the datasets, so that behavior is probably a model bias rather than something picked up from the data.</p>
+      <p id="P70">Although we examined the two commonly used sentence-level datasets, factuality errors do extend to other domains and larger units of text. Our initial analysis of factuality in medical text simplification (<xref rid="R7" ref-type="bibr">Devaraj et al., 2021</xref>) found errors of all three types, an indication that factual simplification is an open problem in such high-stake areas. The details of our analysis are in <xref rid="APP6" ref-type="app">Appendix F</xref>.</p>
+      <p id="P71">We also found that factuality errors are not well captured by existing metrics used in simplification such as SARI (<xref rid="R46" ref-type="bibr">Xu et al., 2016</xref>). While semantic similarity metrics correlate with deletion errors, they poorly correlate with insertion or substitution. We further present an initial model for automatic factuality assessment, which we demonstrate is a challenging task.</p>
+    </sec>
+  </body>
+  <back>
+    <ack id="S27">
+      <title>Acknowledgements</title>
+      <p id="P72">This work was partially supported by NSF grants IIS-1850153, IIS-2107524, IIS-1901117, as well as the National Institutes of Health (NIH), grant R01-LM012086. We also acknowledge the Texas Advanced Computing Center (TACC) at UT Austin for providing the computational resources for many of the results within this paper. We are grateful to the anonymous reviewers for their comments and feedback.</p>
+    </ack>
+    <fn-group>
+      <fn id="FN1">
+        <label>1</label>
+        <p id="P108">We adapt a graded labeling scheme based on content and meaning preservation. For brevity, we use the word “error” as a generic term to refer to all the phenomena captured by our labeling scheme, even those that may be considered acceptable in some simplification systems.</p>
+      </fn>
+      <fn id="FN2">
+        <label>2</label>
+        <p id="P109"><monospace>DRESS</monospace> only released their Wikilarge outputs; <monospace>ControlTS</monospace> had different data splits for Newsela. We could not successfully reproduce their results for Newsela.</p>
+      </fn>
+      <fn id="FN3">
+        <label>3</label>
+        <p id="P110">Note that while so far we have applied our annotation framework with respect to sentences, it is not tied to any specific linguistic unit.</p>
+      </fn>
+    </fn-group>
+    <app-group>
+      <app id="APP1">
+        <label>A</label>
+        <title>Training details for the T5 simplification model</title>
+        <p id="P73">We used the T5 base architecture, which contains around 220M parameters. For both Newsela and Wikilarge, we trained the T5 model for 5 epochs with a batch size of 6 and constant learning rate of 3e-4. We prefixed each input text with the summarization prefix <monospace>summarize</monospace>:, since that was the task closest to simplification that the T5 model was pretrained on. Newsela simplifications were generated using nucleus sampling with <italic toggle="yes">p</italic> = 0.9 (<xref rid="R16" ref-type="bibr">Holtzman et al., 2020</xref>), and Wikilarge simplifications were generated using beam search with 6 beams.</p>
+      </app>
+      <app id="APP2">
+        <label>B</label>
+        <title>Noise filtering on Wikilarge</title>
+        <p id="P74">To filter out noisy alignments in the Wikilarge test set (when comparing the normalized edit distances between complex and simplified sentences in Newsela and Wikilarge), we employed the same method as used by <xref rid="R45" ref-type="bibr">Xu et al. (2015)</xref> to produce sentence-level alignments from the Newsela dataset, that is, we only keep sentence pairs if they have a Jaccard similarity of at least 0.4 if the simplification is one sentence long and 0.2 if it is longer than one sentence.</p>
+      </app>
+      <app id="APP3">
+        <label>C</label>
+        <title>Numerical Details for System Output Results</title>
+        <p id="P75"><xref rid="T1" ref-type="table">Table 11</xref> shows the relationship between mean % length reduction from input text to model output and the level of factuality errors present in the example. <xref rid="T2" ref-type="table">Table 12</xref> likewise shows the relationship between normalized edit distance between inputs and model outputs and factuality annotations.</p>
+      </app>
+      <app id="APP4">
+        <label>D</label>
+        <title>Qualitative Analysis of System Outputs</title>
+        <p id="P76">We also manually examined system outputs for error trends. Despite output variability for every model, two primary trends were observed in deletion errors across the models for both Wikilarge and, where available, Newsela. No trends could be drawn for insertion and substitution errors because of their infrequency. The first type of deletion error, hence referred to as a “short”, is the deletion or change of a single word or short phrase, usually a modifier (such as an adjective, adverb, or serialized noun), but occasionally a noun, noun phrase, or verb. For example:
+<disp-quote id="Q12"><p id="P77"><bold>Original:</bold> The <italic toggle="yes">equilibrium</italic> price for a certain type of labor is the wage.</p><p id="P78"><bold>Simplified:</bold> The price of a certain type of labor is the wage.</p><attrib>(<monospace>ControlTS</monospace>, Wikilarge, deletion-1)</attrib></disp-quote>
+When the word is changed rather than deleted, the replacing word is often less descriptive but can also be lateral. Shorts include pronoun errors, where a noun phrase is replaced with a pronoun. Note also that multiple, independent shorts may occur in an output and still receive a level 1 for deletion. The second type of error, hence referred to as a “long”, is the deletion of a phrase, most commonly a prepositional phrase, or a <italic toggle="yes">subordinate</italic> or <italic toggle="yes">coordinate</italic> clause. For example:
+<disp-quote id="Q13"><p id="P80"><bold>Original:</bold> For Rowling, this scene is important because it shows Harry’s bravery, <italic toggle="yes">and by retrieving Cedric’s corpse, he demonstrates selflessness and compassion</italic>.</p><p id="P81"><bold>Simplified:</bold> For Rowling, this scene is important because it shows Harry’s bravery.</p><attrib>(<monospace>Dress</monospace>, Wikilarge, deletion-2)</attrib></disp-quote></p>
+        <p id="P82">Importantly, longs concerning clauses differ from the clause promotion error found in the datasets in that longs delete a <italic toggle="yes">subordinate</italic> or <italic toggle="yes">coordinate</italic> clause of the original while clause promotion errors delete the <italic toggle="yes">main</italic> clause of the original. Multiple, independent longs rarely occur in one output; that is, if multiple secondary clauses are deleted, they are usually nested (likely because a sentence where this could happen would have a very complex structure, at least in English.)</p>
+        <p id="P83"><monospace>Access</monospace> and <monospace>ControlTS</monospace> had notable variability in the errors. Despite this, shorts were the most common error for label 1, with no notable presence of longs. These shorts were often not pronoun errors. Additionally, no trends could be noted for label 2 errors in these models. By contrast, nearly all of <monospace>Dress</monospace>’s errors fit into these two trends. Label 1 output errors primarily consisted of shorts, especially pronoun errors, though longs also occurred. Label 2 output errors were almost entirely longs. <monospace>EditNTS</monospace> and <monospace>T5</monospace> errors closely follow the trends found in Dress, though <monospace>T5</monospace> notably had several label 2 errors that were shorts, deleting a semantically-critical word.</p>
+      </app>
+      <app id="APP5">
+        <label>E</label>
+        <title>Automatic Factuality Assessment</title>
+        <p id="P84">Here we describe the details of generating synthetic data and training the three annotation classifiers.</p>
+        <sec id="S33">
+          <label>E.1</label>
+          <title>Synthetic Data Generation</title>
+          <sec id="S34">
+            <title>Name Insertion.</title>
+            <p id="P85">Each name of a person in the source text is replaced one at a time with a pronoun to create a target text. Then the source and target texts are swapped to simulate the insertion of a name in place of a pronoun. This text pair is labeled with a level 1 insertion.</p>
+            <table-wrap position="anchor" id="T1">
+              <label>Table 11:</label>
+              <caption>
+                <p id="P86">% length change in system outputs (mean).</p>
+              </caption>
+              <table frame="hsides" rules="groups">
+                <colgroup span="1">
+                  <col align="left" valign="middle" span="1"/>
+                  <col align="left" valign="middle" span="1"/>
+                  <col align="left" valign="middle" span="1"/>
+                  <col align="left" valign="middle" span="1"/>
+                  <col align="left" valign="middle" span="1"/>
+                  <col align="left" valign="middle" span="1"/>
+                  <col align="left" valign="middle" span="1"/>
+                  <col align="left" valign="middle" span="1"/>
+                  <col align="left" valign="middle" span="1"/>
+                  <col align="left" valign="middle" span="1"/>
+                  <col align="left" valign="middle" span="1"/>
+                </colgroup>
+                <thead>
+                  <tr style="border-bottom: solid 1px">
+                    <th align="center" valign="middle" rowspan="1" colspan="1"/>
+                    <th align="center" valign="middle" style="border-right: solid 1px" rowspan="1" colspan="1"/>
+                    <th colspan="3" align="center" valign="middle" style="border-right: solid 1px" rowspan="1">Insertion</th>
+                    <th colspan="3" align="center" valign="middle" style="border-right: solid 1px" rowspan="1">Deletion</th>
+                    <th colspan="3" align="center" valign="middle" rowspan="1">Substitution</th>
+                  </tr>
+                  <tr>
+                    <th align="left" valign="middle" rowspan="1" colspan="1">Model</th>
+                    <th align="left" valign="middle" style="border-right: solid 1px" rowspan="1" colspan="1">Dataset</th>
+                    <th align="left" valign="middle" rowspan="1" colspan="1">0</th>
+                    <th align="left" valign="middle" rowspan="1" colspan="1">1</th>
+                    <th align="left" valign="middle" style="border-right: solid 1px" rowspan="1" colspan="1">2</th>
+                    <th align="left" valign="middle" rowspan="1" colspan="1">0</th>
+                    <th align="left" valign="middle" rowspan="1" colspan="1">1</th>
+                    <th align="left" valign="middle" style="border-right: solid 1px" rowspan="1" colspan="1">2</th>
+                    <th align="left" valign="middle" rowspan="1" colspan="1">0</th>
+                    <th align="left" valign="middle" rowspan="1" colspan="1">1</th>
+                    <th align="left" valign="middle" rowspan="1" colspan="1">2</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td rowspan="2" align="left" valign="top" colspan="1">Dress</td>
+                    <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">Wikilarge</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">−20.7</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">6.3</td>
+                    <td align="center" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">−26.3</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">0.11</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">−26.8</td>
+                    <td align="center" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">−47.4</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">−21.0</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">−10.5</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">−15.1</td>
+                  </tr>
+                  <tr>
+                    <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">Newsela</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">−29.4</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">—</td>
+                    <td align="center" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">—</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">−1.4</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">−35.4</td>
+                    <td align="center" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">−51.0</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">−31.1</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">−21.8</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">−27.8</td>
+                  </tr>
+                  <tr>
+                    <td rowspan="2" align="left" valign="top" colspan="1">EditNTS</td>
+                    <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">Wikilarge</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">−16.4</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">40.8</td>
+                    <td align="center" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">72.7</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">3.4</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">−25.0</td>
+                    <td align="center" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">−42.4</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">−13.0</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">−3.1</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">−15.6</td>
+                  </tr>
+                  <tr>
+                    <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">Newsela</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">−41.6</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">33.3</td>
+                    <td align="center" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">−38.9</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">0.8</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">−39.4</td>
+                    <td align="center" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">−51.9</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">−40.2</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">−57.9</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">−32.7</td>
+                  </tr>
+                  <tr>
+                    <td rowspan="2" align="left" valign="top" colspan="1">T5</td>
+                    <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">Wikilarge</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">−4.1</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">−4.6</td>
+                    <td align="center" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">−21.4</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">−0.04</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">−22.2</td>
+                    <td align="center" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">−30.5</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">−4.5</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">0.0</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">—</td>
+                  </tr>
+                  <tr>
+                    <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">Newsela</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">−25.1</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">−8.6</td>
+                    <td align="center" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">−25.4</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">1.5</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">−27.5</td>
+                    <td align="center" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">−46.3</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">−26.5</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">1.3</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">—</td>
+                  </tr>
+                  <tr>
+                    <td align="left" valign="top" rowspan="1" colspan="1">Access</td>
+                    <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">Wikilarge</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">−2.2</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">4.4</td>
+                    <td align="center" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">0.0</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">0.7</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">−5.2</td>
+                    <td align="center" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">1.7</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">−1.8</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">−0.6</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">−1.2</td>
+                  </tr>
+                  <tr>
+                    <td align="left" valign="top" rowspan="1" colspan="1">ControlTS</td>
+                    <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">Wikilarge</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">−10.6</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">−5.9</td>
+                    <td align="center" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">−23.5</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">−1.5</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">−16.2</td>
+                    <td align="center" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">−28.2</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">−11.1</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">−5.5</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">−22.3</td>
+                  </tr>
+                </tbody>
+              </table>
+            </table-wrap>
+            <table-wrap position="anchor" id="T2">
+              <label>Table 12:</label>
+              <caption>
+                <p id="P87">Normalized edit distances in system outputs (mean).</p>
+              </caption>
+              <table frame="hsides" rules="groups">
+                <colgroup span="1">
+                  <col align="left" valign="middle" span="1"/>
+                  <col align="left" valign="middle" span="1"/>
+                  <col align="left" valign="middle" span="1"/>
+                  <col align="left" valign="middle" span="1"/>
+                  <col align="left" valign="middle" span="1"/>
+                  <col align="left" valign="middle" span="1"/>
+                  <col align="left" valign="middle" span="1"/>
+                  <col align="left" valign="middle" span="1"/>
+                  <col align="left" valign="middle" span="1"/>
+                  <col align="left" valign="middle" span="1"/>
+                  <col align="left" valign="middle" span="1"/>
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th align="center" valign="middle" rowspan="1" colspan="1"/>
+                    <th align="center" valign="middle" style="border-right: solid 1px" rowspan="1" colspan="1"/>
+                    <th colspan="3" align="center" valign="middle" style="border-right: solid 1px" rowspan="1">Insertion</th>
+                    <th colspan="3" align="center" valign="middle" style="border-right: solid 1px" rowspan="1">Deletion</th>
+                    <th colspan="3" align="center" valign="middle" rowspan="1">Substitution</th>
+                  </tr>
+                  <tr>
+                    <th align="left" valign="middle" rowspan="1" colspan="1">Model</th>
+                    <th align="left" valign="middle" style="border-right: solid 1px" rowspan="1" colspan="1">Dataset</th>
+                    <th align="left" valign="middle" rowspan="1" colspan="1">0</th>
+                    <th align="left" valign="middle" rowspan="1" colspan="1">1</th>
+                    <th align="left" valign="middle" style="border-right: solid 1px" rowspan="1" colspan="1">2</th>
+                    <th align="left" valign="middle" rowspan="1" colspan="1">0</th>
+                    <th align="left" valign="middle" rowspan="1" colspan="1">1</th>
+                    <th align="left" valign="middle" style="border-right: solid 1px" rowspan="1" colspan="1">2</th>
+                    <th align="left" valign="middle" rowspan="1" colspan="1">0</th>
+                    <th align="left" valign="middle" rowspan="1" colspan="1">1</th>
+                    <th align="left" valign="middle" rowspan="1" colspan="1">2</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td rowspan="2" align="left" valign="top" colspan="1">Dress</td>
+                    <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">Wikilarge</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">0.23</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">0.06</td>
+                    <td align="center" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">0.42</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">0.03</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">0.32</td>
+                    <td align="center" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">0.49</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">0.23</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">0.22</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">0.17</td>
+                  </tr>
+                  <tr>
+                    <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">Newsela</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">0.29</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">—</td>
+                    <td align="center" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">—</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">0.07</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">0.38</td>
+                    <td align="center" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">0.48</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">0.28</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">0.30</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">0.33</td>
+                  </tr>
+                  <tr>
+                    <td rowspan="2" align="left" valign="top" colspan="1">EditNTS</td>
+                    <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">Wikilarge</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">0.18</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">0.46</td>
+                    <td align="center" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">—</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">0.10</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">0.25</td>
+                    <td align="center" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">0.43</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">0.20</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">0.17</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">0.18</td>
+                  </tr>
+                  <tr>
+                    <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">Newsela</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">0.36</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">0.33</td>
+                    <td align="center" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">—</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">0.10</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">0.37</td>
+                    <td align="center" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">0.46</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">0.37</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">0.42</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">0.25</td>
+                  </tr>
+                  <tr>
+                    <td rowspan="2" align="left" valign="top" colspan="1">T5</td>
+                    <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">Wikilarge</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">0.08</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">0.53</td>
+                    <td align="center" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">—</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">0.04</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">0.30</td>
+                    <td align="center" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">0.56</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">0.09</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">0.09</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">—</td>
+                  </tr>
+                  <tr>
+                    <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">Newsela</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">0.30</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">0.36</td>
+                    <td align="center" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">0.56</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">0.13</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">0.39</td>
+                    <td align="center" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">0.13</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">0.33</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">0.13</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">—</td>
+                  </tr>
+                  <tr>
+                    <td align="left" valign="top" rowspan="1" colspan="1">Access</td>
+                    <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">Wikilarge</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">0.20</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">0.31</td>
+                    <td align="center" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">0.14</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">0.17</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">0.23</td>
+                    <td align="center" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">0.42</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">0.22</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">0.20</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">0.21</td>
+                  </tr>
+                  <tr>
+                    <td align="left" valign="top" rowspan="1" colspan="1">ControlTS</td>
+                    <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">Wikilarge</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">0.24</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">0.43</td>
+                    <td align="center" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">0.52</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">0.12</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">0.38</td>
+                    <td align="center" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">0.50</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">0.27</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">0.24</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">0.52</td>
+                  </tr>
+                </tbody>
+              </table>
+            </table-wrap>
+          </sec>
+          <sec id="S35">
+            <title>Phrase Insertion.</title>
+            <p id="P88">Each phrase in the source text is deleted one at a time to create a shorter target text, and the source and target texts are swapped to simulate the insertion of a phrase. The insertion is labeled as a level 1 if the BERTScore of the texts is between 0.6 and 0.8, and it is labeled as 2 if it is between 0.2 and 0.4. If the score is not in either interval, the example is discarded. These thresholds were determined by manual inspection of the distribution of scores computed in <xref rid="S18" ref-type="sec">Section 8</xref>.</p>
+          </sec>
+          <sec id="S36">
+            <title>Number Alteration.</title>
+            <p id="P89">We replace each number found in the source sentence one at a time with a random number of the same order of magnitude (e.g., 3 → 7, 99 → 74) This modification is labeled as a level 1 substitution.</p>
+          </sec>
+          <sec id="S37">
+            <title>Statement Negation.</title>
+            <p id="P90">Each auxiliary verb in the source text is negated one at a time to generate target texts. This modification is labeled as a level 1 substitution.</p>
+          </sec>
+          <sec id="S38">
+            <title>BERT Masking.</title>
+            <p id="P91">To generate level 1 substitutions, we randomly mask 2 tokens in the source text, pass the masked text through a BERT model, and fill the masked tokens with the third highest probability token in the output logits. To generate level 2 substitutions, we instead mask every fifth token in the source text and fill them with the fifth highest probability token indicated by the logits.</p>
+            <table-wrap position="anchor" id="T3">
+              <label>Table 13:</label>
+              <caption>
+                <p id="P92">Sizes and label distributions of synthetic datasets.</p>
+              </caption>
+              <table frame="hsides" rules="groups">
+                <colgroup span="1">
+                  <col align="left" valign="middle" span="1"/>
+                  <col align="left" valign="middle" span="1"/>
+                  <col align="left" valign="middle" span="1"/>
+                  <col align="left" valign="middle" span="1"/>
+                  <col align="left" valign="middle" span="1"/>
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th align="center" valign="middle" style="border-right: solid 1px" rowspan="1" colspan="1">Category</th>
+                    <th align="center" valign="middle" rowspan="1" colspan="1">Level 0</th>
+                    <th align="center" valign="middle" rowspan="1" colspan="1">Level 1</th>
+                    <th align="center" valign="middle" rowspan="1" colspan="1">Level 2</th>
+                    <th align="center" valign="middle" rowspan="1" colspan="1">Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td align="center" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">Insertion</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">823</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">1167</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">1167</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">3157</td>
+                  </tr>
+                  <tr>
+                    <td align="center" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">Substitution</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">810</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">4572</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">2008</td>
+                    <td align="center" valign="top" rowspan="1" colspan="1">7390</td>
+                  </tr>
+                </tbody>
+              </table>
+            </table-wrap>
+            <p id="P93">Once synthetic examples were generated, all the label 0 examples from the original training dataset were added. In the insertion synthetic dataset, level 1 labels significantly outnumbered level 2 labels, so only a random sample of them was included in the final dataset. <xref rid="T3" ref-type="table">Table 13</xref> shows the sizes and label distributions of the synthetic datasets. Some class imbalance was tolerated here since the number of examples for all levels was much larger than in the original training set and minority classes were oversampled during training.</p>
+          </sec>
+        </sec>
+        <sec id="S39">
+          <label>E.2</label>
+          <title>Model</title>
+          <p id="P94">We fine-tune the pretrained base RoBERTa model architecture with a classification head. The model contains 12 hidden layers, a hidden size of 768, and 12 attention heads.</p>
+        </sec>
+        <sec id="S40">
+          <label>E.3</label>
+          <title>Training Details</title>
+          <p id="P95">The insertion and substitution models were pre-trained on an 80–20 train/dev split of their synthetic datasets for 10 epochs with a batch size of 64 and learning rate of 1e-4 and evaluated on the validation split every 100 steps.</p>
+          <p id="P96">The best checkpoint was selected and then trained on an 80–20 split of its original dataset for 50 epochs with the same batch size and learning rate and evaluated every 10 steps. The best model from this round was finally fine-tuned on the entire training dataset for 1 epoch with the same batch size but a learning rate of 3e-5 before being evaluated on the test set.</p>
+          <p id="P97">The deletion classifier was trained similarly, except that the pretraining step was omitted.</p>
+          <p id="P98">In every stage of training, minority classes were oversampled in the training split until they matched the frequency of the most populous class.</p>
+        </sec>
+      </app>
+      <app id="APP6">
+        <label>F</label>
+        <title>Case Study: Medical Texts</title>
+        <p id="P99">We present an initial analysis of factuality in the context of medical text simplification (<xref rid="R7" ref-type="bibr">Devaraj et al., 2021</xref>), a case where information accuracy is paramount. This task presents unique challenges given the complex, jargon-laden texts to be simplified. We evaluate a model proposed in recent work for medical text simplification (<xref rid="R7" ref-type="bibr">Devaraj et al., 2021</xref>). This was trained by fine-tuning BART (<xref rid="R25" ref-type="bibr">Lewis et al., 2020</xref>) on aligned <italic toggle="yes">paragraphs</italic> of technical abstracts—plain English summaries from the Cochrane library, a database of systematic reviews of clinical trials. We annotated 10 randomly selected outputs from this model with respect to the original <italic toggle="yes">paragraphs</italic>.<sup><xref rid="FN3" ref-type="fn">3</xref></sup> Because the original texts are difficult to understand, we enlist a trained annotator (a senior in Linguistics and co-author of this work) to perform this evaluation.</p>
+        <p id="P100"><xref rid="T4" ref-type="table">Table 14</xref> reports the number of error types observed across paragraphs. The error rate here is disconcerting: Out of the 10 paragraphs evaluated, we found 3 with at least one level-2 error, and 5 with more than one error. We provide examples or errors below. These findings further stresses the critical importance of factuality evaluation and improvement in simplification systems.
+<list list-type="simple" id="L6"><list-item><p id="P181">Insertion
+<disp-quote id="Q14"><p id="P101"><bold>Original:</bold> […] All studies were associated with methodological limitations. […]</p><p id="P102"><bold>Simplified:</bold> […] All studies were <styled-content style="color:#FF0000">of poor quality and</styled-content> had limitations in the way they were conducted. […]</p></disp-quote></p></list-item><list-item><p id="P182">Substitution
+<disp-quote id="Q15"><p id="P103"><bold>Original:</bold> […] There was <styled-content style="color:#0000FF">no</styled-content> difference in operating time or perioperative complication rates. […]</p><p id="P104"><bold>Simplified:</bold> […] However, there was <styled-content style="color:#0000FF">not enough evidence to determine if there was an important</styled-content> difference in operative time or complication rates when compared to conventional surgery. […]</p></disp-quote></p></list-item><list-item><p id="P183">Deletion
+<disp-quote id="Q16"><p id="P106"><bold>Original:</bold> Two trials with a total population of 1300 <styled-content style="color:#FF0000">amyotrophic lateral sclerosis</styled-content> patients who were randomized to treatment with subcutaneous injections of recombinant human ciliary neurotrophic factor or placebo were examined in this review. […]</p><p id="P107"><bold>Simplified:</bold> In this review, we found two randomised-controlled trials with a total population of 1300 patients who were randomized to treatment with subcutaneous injections of recombinant human ciliary neurotrophic factor or placebo. […]</p></disp-quote></p></list-item></list>
+</p>
+        <table-wrap position="anchor" id="T4">
+          <label>Table 14:</label>
+          <caption>
+            <p id="P105">Error judgments of the 10 example outputs from <xref rid="R7" ref-type="bibr">Devaraj et al. (2021)</xref>.</p>
+          </caption>
+          <table frame="hsides" rules="groups">
+            <colgroup span="1">
+              <col align="left" valign="middle" span="1"/>
+              <col align="left" valign="middle" span="1"/>
+              <col align="left" valign="middle" span="1"/>
+              <col align="left" valign="middle" span="1"/>
+            </colgroup>
+            <thead>
+              <tr>
+                <th align="center" valign="middle" style="border-right: solid 1px" rowspan="1" colspan="1">Category</th>
+                <th align="center" valign="middle" rowspan="1" colspan="1">Level 0</th>
+                <th align="center" valign="middle" rowspan="1" colspan="1">Level 1</th>
+                <th align="center" valign="middle" rowspan="1" colspan="1">Level 2</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td align="center" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">Insertion</td>
+                <td align="center" valign="top" rowspan="1" colspan="1">5</td>
+                <td align="center" valign="top" rowspan="1" colspan="1">4</td>
+                <td align="center" valign="top" rowspan="1" colspan="1">1</td>
+              </tr>
+              <tr>
+                <td align="center" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">Deletion</td>
+                <td align="center" valign="top" rowspan="1" colspan="1">0</td>
+                <td align="center" valign="top" rowspan="1" colspan="1">8</td>
+                <td align="center" valign="top" rowspan="1" colspan="1">2</td>
+              </tr>
+              <tr>
+                <td align="center" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">Substitution</td>
+                <td align="center" valign="top" rowspan="1" colspan="1">8</td>
+                <td align="center" valign="top" rowspan="1" colspan="1">1</td>
+                <td align="center" valign="top" rowspan="1" colspan="1">1</td>
+              </tr>
+            </tbody>
+          </table>
+        </table-wrap>
+      </app>
+    </app-group>
+    <ref-list>
+      <title>References</title>
+      <ref id="R1">
+        <mixed-citation publication-type="journal"><name><surname>Alva-Manchego</surname><given-names>Fernando</given-names></name>, <name><surname>Scarton</surname><given-names>Carolina</given-names></name>, and <name><surname>Specia</surname><given-names>Lucia</given-names></name>. <year>2020</year>. <article-title>Data-driven sentence simplification: Survey and benchmark</article-title>. <source>Computational Linguistics</source>, <volume>46</volume>(<issue>1</issue>):<fpage>135</fpage>–<lpage>187</lpage>.</mixed-citation>
+      </ref>
+      <ref id="R2">
+        <mixed-citation publication-type="journal"><name><surname>Artstein</surname><given-names>Ron</given-names></name> and <name><surname>Poesio</surname><given-names>Massimo</given-names></name>. <year>2008</year>. <article-title>Inter-Coder Agreement for Computational Linguistics</article-title>. <source>Computational Linguistics</source>, <volume>34</volume>(<issue>4</issue>):<fpage>555</fpage>–<lpage>596</lpage>.</mixed-citation>
+      </ref>
+      <ref id="R3">
+        <mixed-citation publication-type="confproc"><name><surname>Carroll</surname><given-names>John</given-names></name>, <name><surname>Minnen</surname><given-names>Guido</given-names></name>, <name><surname>Canning</surname><given-names>Yvonne</given-names></name>, <name><surname>Devlin</surname><given-names>Siobhan</given-names></name>, and <name><surname>Tait</surname><given-names>John</given-names></name>. <year>1998</year>. <article-title>Practical simplification of english newspaper text to assist aphasic readers</article-title>. In <conf-name>Proceedings of the AAAI-98 Workshop on Integrating Artificial Intelligence and Assistive Technology</conf-name>, pages <fpage>7</fpage>–<lpage>10</lpage>.</mixed-citation>
+      </ref>
+      <ref id="R4">
+        <mixed-citation publication-type="journal"><name><surname>Choi</surname><given-names>Eunsol</given-names></name>, <name><surname>Palomaki</surname><given-names>Jennimaria</given-names></name>, <name><surname>Lamm</surname><given-names>Matthew</given-names></name>, <name><surname>Kwiatkowski</surname><given-names>Tom</given-names></name>, <name><surname>Das</surname><given-names>Dipanjan</given-names></name>, and <name><surname>Collins</surname><given-names>Michael</given-names></name>. <year>2021</year>. <article-title>Decontextualization: Making sentences stand-alone</article-title>. <source>Transactions of the Association for Computational Linguistics</source>, <volume>9</volume>:<fpage>447</fpage>–<lpage>461</lpage>.</mixed-citation>
+      </ref>
+      <ref id="R5">
+        <mixed-citation publication-type="confproc"><name><surname>Damay</surname><given-names>Jerwin Jan S</given-names></name>, <name><surname>Lojico</surname><given-names>Gerard Jaime D</given-names></name>, <name><surname>Lu</surname><given-names>Kimberly Amanda L</given-names></name>, <name><surname>Tarantan</surname><given-names>D</given-names></name>, and <name><surname>Ong</surname><given-names>E</given-names></name>. <year>2006</year>. <article-title>SIMTEXT: Text simplification of medical literature</article-title>. In <conf-name>Proceedings of the 3rd National Natural Language Processing Symposium-Building Language Tools and Resources</conf-name>, pages <fpage>34</fpage>–<lpage>38</lpage>.</mixed-citation>
+      </ref>
+      <ref id="R6">
+        <mixed-citation publication-type="confproc"><name><surname>De Belder</surname><given-names>Jan</given-names></name> and <name><surname>Moens</surname><given-names>Marie-Francine</given-names></name>. <year>2010</year>. <article-title>Text simplification for children</article-title>. In <conf-name>Proceedings of the SIGIR workshop on accessible search systems</conf-name>, pages <fpage>19</fpage>–<lpage>26</lpage>.</mixed-citation>
+      </ref>
+      <ref id="R7">
+        <mixed-citation publication-type="confproc"><name><surname>Devaraj</surname><given-names>Ashwin</given-names></name>, <name><surname>Marshall</surname><given-names>Iain</given-names></name>, <name><surname>Wallace</surname><given-names>Byron</given-names></name>, and <name><surname>Li</surname><given-names>Junyi Jessy</given-names></name>. <year>2021</year>. <article-title>Paragraph-level simplification of medical texts</article-title>. In <conf-name>Proceedings of the 2021 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies</conf-name>, pages <fpage>4972</fpage>–<lpage>4984</lpage>, <comment>Online.</comment>
+<publisher-name>Association for Computational Linguistics</publisher-name>.</mixed-citation>
+      </ref>
+      <ref id="R8">
+        <mixed-citation publication-type="confproc"><name><surname>Devlin</surname><given-names>Jacob</given-names></name>, <name><surname>Chang</surname><given-names>Ming-Wei</given-names></name>, <name><surname>Lee</surname><given-names>Kenton</given-names></name>, and <name><surname>Toutanova</surname><given-names>Kristina</given-names></name>. <year>2019</year>. <article-title>BERT: Pre-training of deep bidirectional transformers for language understanding</article-title>. In <conf-name>Proceedings of the 2019 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies</conf-name>, Volume <volume>1</volume> (<comment>Long and Short Papers</comment>), pages <fpage>4171</fpage>–<lpage>4186</lpage>, <conf-loc>Minneapolis, Minnesota</conf-loc>. <publisher-name>Association for Computational Linguistics</publisher-name>.</mixed-citation>
+      </ref>
+      <ref id="R9">
+        <mixed-citation publication-type="confproc"><name><surname>Dong</surname><given-names>Yue</given-names></name>, <name><surname>Li</surname><given-names>Zichao</given-names></name>, <name><surname>Rezagholizadeh</surname><given-names>Mehdi</given-names></name>, and <name><surname>Cheung</surname><given-names>Jackie Chi Kit</given-names></name>. <year>2019</year>. <article-title>EditNTS: An neural programmer-interpreter model for sentence simplification through explicit editing</article-title>. In <conf-name>Proceedings of the 57th Annual Meeting of the Association for Computational Linguistics</conf-name>, pages <fpage>3393</fpage>–<lpage>3402</lpage>, <conf-loc>Florence, Italy</conf-loc>. <publisher-name>Association for Computational Linguistics</publisher-name>.</mixed-citation>
+      </ref>
+      <ref id="R10">
+        <mixed-citation publication-type="confproc"><name><surname>Durmus</surname><given-names>Esin</given-names></name>, <name><surname>He</surname><given-names>He</given-names></name>, and <name><surname>Diab</surname><given-names>Mona</given-names></name>. <year>2020</year>. <article-title>FEQA: A question answering evaluation framework for faithfulness assessment in abstractive summarization</article-title>. In <conf-name>Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics</conf-name>, pages <fpage>5055</fpage>–<lpage>5070</lpage>, <comment>Online.</comment>
+<publisher-name>Association for Computational Linguistics</publisher-name>.</mixed-citation>
+      </ref>
+      <ref id="R11">
+        <mixed-citation publication-type="confproc"><name><surname>Falke</surname><given-names>Tobias</given-names></name>, <name><surname>Ribeiro</surname><given-names>Leonardo F. R.</given-names></name>, <name><surname>Utama</surname><given-names>Prasetya Ajie</given-names></name>, <name><surname>Dagan</surname><given-names>Ido</given-names></name>, and <name><surname>Gurevych</surname><given-names>Iryna</given-names></name>. <year>2019a</year>. <article-title>Ranking generated summaries by correctness: An interesting but challenging application for natural language inference</article-title>. In <conf-name>Proceedings of the 57th Annual Meeting of the Association for Computational Linguistics</conf-name>, pages <fpage>2214</fpage>–<lpage>2220</lpage>, <conf-loc>Florence, Italy</conf-loc>. <publisher-name>Association for Computational Linguistics</publisher-name>.</mixed-citation>
+      </ref>
+      <ref id="R12">
+        <mixed-citation publication-type="confproc"><name><surname>Falke</surname><given-names>Tobias</given-names></name>, <name><surname>Ribeiro</surname><given-names>Leonardo F. R.</given-names></name>, <name><surname>Utama</surname><given-names>Prasetya Ajie</given-names></name>, <name><surname>Dagan</surname><given-names>Ido</given-names></name>, and <name><surname>Gurevych</surname><given-names>Iryna</given-names></name>. <year>2019b</year>. <article-title>Ranking generated summaries by correctness: An interesting but challenging application for natural language inference</article-title>. In <conf-name>Proceedings of the 57th Annual Meeting of the Association for Computational Linguistics</conf-name>, pages <fpage>2214</fpage>–<lpage>2220</lpage>, <conf-loc>Florence, Italy</conf-loc>. <publisher-name>Association for Computational Linguistics</publisher-name>.</mixed-citation>
+      </ref>
+      <ref id="R13">
+        <mixed-citation publication-type="journal"><name><surname>Goyal</surname><given-names>Tanya</given-names></name> and <name><surname>Durrett</surname><given-names>Greg</given-names></name>. <year>2020</year>. <article-title>Evaluating factuality in generation with dependency-level entailment</article-title>. <source>Findings of the Association for Computational Linguistics: EMNLP 2020</source>.</mixed-citation>
+      </ref>
+      <ref id="R14">
+        <mixed-citation publication-type="confproc"><name><surname>Goyal</surname><given-names>Tanya</given-names></name> and <name><surname>Durrett</surname><given-names>Greg</given-names></name>. <year>2021</year>. <article-title>Annotating and modeling fine-grained factuality in summarization</article-title>. In <conf-name>Proceedings of the 2021 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies</conf-name>, pages <fpage>1449</fpage>–<lpage>1462</lpage>, <comment>Online.</comment>
+<publisher-name>Association for Computational Linguistics</publisher-name>.</mixed-citation>
+      </ref>
+      <ref id="R15">
+        <mixed-citation publication-type="confproc"><name><surname>Guo</surname><given-names>Han</given-names></name>, <name><surname>Pasunuru</surname><given-names>Ramakanth</given-names></name>, and <name><surname>Bansal</surname><given-names>Mohit</given-names></name>. <year>2018</year>. <article-title>Dynamic multi-level multi-task learning for sentence simplification</article-title>. In <conf-name>Proceedings of the 27th International Conference on Computational Linguistics</conf-name>, pages <fpage>462</fpage>–<lpage>476</lpage>, <conf-loc>Santa Fe, New Mexico, USA</conf-loc>. <publisher-name>Association for Computational Linguistics</publisher-name>.</mixed-citation>
+      </ref>
+      <ref id="R16">
+        <mixed-citation publication-type="confproc"><name><surname>Holtzman</surname><given-names>Ari</given-names></name>, <name><surname>Buys</surname><given-names>Jan</given-names></name>, <name><surname>Du</surname><given-names>Li</given-names></name>, <name><surname>Forbes</surname><given-names>Maxwell</given-names></name>, and <name><surname>Choi</surname><given-names>Yejin</given-names></name>. <year>2020</year>. <article-title>The curious case of neural text degeneration</article-title>. <conf-name>Eighth International Conference on Learning Representations</conf-name>.</mixed-citation>
+      </ref>
+      <ref id="R17">
+        <mixed-citation publication-type="other"><name><surname>Klare</surname><given-names>George Roger</given-names></name>. <year>1963</year>. <source>Measurement of readability</source>.</mixed-citation>
+      </ref>
+      <ref id="R18">
+        <mixed-citation publication-type="journal"><name><surname>Krippendorff</surname><given-names>Klaus</given-names></name>. <year>1970</year>. <article-title>Estimating the reliability, systematic error and random error of interval data</article-title>. <source>Educational and Psychological Measurement</source>, <volume>30</volume>(<issue>1</issue>):<fpage>61</fpage>–<lpage>70</lpage>.</mixed-citation>
+      </ref>
+      <ref id="R19">
+        <mixed-citation publication-type="confproc"><name><surname>Kriz</surname><given-names>Reno</given-names></name>, <name><surname>Sedoc</surname><given-names>João</given-names></name>, <name><surname>Apidianaki</surname><given-names>Marianna</given-names></name>, <name><surname>Zheng</surname><given-names>Carolina</given-names></name>, <name><surname>Kumar</surname><given-names>Gaurav</given-names></name>, <name><surname>Miltsakaki</surname><given-names>Eleni</given-names></name>, and <name><surname>Callison-Burch</surname><given-names>Chris</given-names></name>. <year>2019</year>. <article-title>Complexity-weighted loss and diverse reranking for sentence simplification</article-title>. In <conf-name>Proceedings of the 2019 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies</conf-name>, Volume <volume>1</volume> (<comment>Long and Short Papers</comment>), pages <fpage>3137</fpage>–<lpage>3147</lpage>, <conf-loc>Minneapolis, Minnesota</conf-loc>. <publisher-name>Association for Computational Linguistics</publisher-name>.</mixed-citation>
+      </ref>
+      <ref id="R20">
+        <mixed-citation publication-type="confproc"><name><surname>Kryscinski</surname><given-names>Wojciech</given-names></name>, <name><surname>Keskar</surname><given-names>Nitish Shirish</given-names></name>, <name><surname>McCann</surname><given-names>Bryan</given-names></name>, <name><surname>Xiong</surname><given-names>Caiming</given-names></name>, and <name><surname>Socher</surname><given-names>Richard</given-names></name>. <year>2019</year>. <article-title>Neural text summarization: A critical evaluation</article-title>. In <conf-name>Proceedings of the 2019 Conference on Empirical Methods in Natural Language Processing and the 9th International Joint Conference on Natural Language Processing (EMNLP-IJCNLP)</conf-name>, pages <fpage>540</fpage>–<lpage>551</lpage>, <conf-loc>Hong Kong, China</conf-loc>. <publisher-name>Association for Computational Linguistics</publisher-name>.</mixed-citation>
+      </ref>
+      <ref id="R21">
+        <mixed-citation publication-type="confproc"><name><surname>Kryscinski</surname><given-names>Wojciech</given-names></name>, <name><surname>McCann</surname><given-names>Bryan</given-names></name>, <name><surname>Xiong</surname><given-names>Caiming</given-names></name>, and <name><surname>Socher</surname><given-names>Richard</given-names></name>. <year>2020a</year>. <article-title>Evaluating the factual consistency of abstractive text summarization</article-title>. In <conf-name>Proceedings of the 2020 Conference on Empirical Methods in Natural Language Processing (EMNLP)</conf-name>, pages <fpage>9332</fpage>–<lpage>9346</lpage>, <comment>Online.</comment>
+<publisher-name>Association for Computational Linguistics</publisher-name>.</mixed-citation>
+      </ref>
+      <ref id="R22">
+        <mixed-citation publication-type="confproc"><name><surname>Kryscinski</surname><given-names>Wojciech</given-names></name>, <name><surname>McCann</surname><given-names>Bryan</given-names></name>, <name><surname>Xiong</surname><given-names>Caiming</given-names></name>, and <name><surname>Socher</surname><given-names>Richard</given-names></name>. <year>2020b</year>. <article-title>Evaluating the factual consistency of abstractive text summarization</article-title>. In <conf-name>Proceedings of the 2020 Conference on Empirical Methods in Natural Language Processing (EMNLP)</conf-name>, pages <fpage>9332</fpage>–<lpage>9346</lpage>, <comment>Online.</comment>
+<publisher-name>Association for Computational Linguistics</publisher-name>.</mixed-citation>
+      </ref>
+      <ref id="R23">
+        <mixed-citation publication-type="confproc"><name><surname>Laban</surname><given-names>Philippe</given-names></name>, <name><surname>Schnabel</surname><given-names>Tobias</given-names></name>, <name><surname>Bennett</surname><given-names>Paul</given-names></name>, and <name><surname>Hearst</surname><given-names>Marti A.</given-names></name>. <year>2021</year>. <article-title>Keep it simple: Unsupervised simplification of multi-paragraph text</article-title>. In <conf-name>Proceedings of the 59th Annual Meeting of the Association for Computational Linguistics and the 11th International Joint Conference on Natural Language Processing</conf-name> (Volume <volume>1</volume>: <comment>Long Papers</comment>), pages <fpage>6365</fpage>–<lpage>6378</lpage>, <comment>Online.</comment>
+<publisher-name>Association for Computational Linguistics</publisher-name>.</mixed-citation>
+      </ref>
+      <ref id="R24">
+        <mixed-citation publication-type="journal"><name><surname>Levenshtein</surname><given-names>Vladimir I.</given-names></name>. <year>1965</year>. <article-title>Binary codes capable of correcting deletions, insertions, and reversals</article-title>. <source>Soviet physics. Doklady</source>, <volume>10</volume>:<fpage>707</fpage>–<lpage>710</lpage>.</mixed-citation>
+      </ref>
+      <ref id="R25">
+        <mixed-citation publication-type="confproc"><name><surname>Lewis</surname><given-names>Mike</given-names></name>, <name><surname>Liu</surname><given-names>Yinhan</given-names></name>, <name><surname>Goyal</surname><given-names>Naman</given-names></name>, <name><surname>Ghazvininejad</surname><given-names>Marjan</given-names></name>, <name><surname>Mohamed</surname><given-names>Abdelrahman</given-names></name>, <name><surname>Levy</surname><given-names>Omer</given-names></name>, <name><surname>Stoyanov</surname><given-names>Veselin</given-names></name>, and <name><surname>Zettlemoyer</surname><given-names>Luke</given-names></name>. <year>2020</year>. <article-title>BART: Denoising sequence-to-sequence pretraining for natural language generation, translation, and comprehension</article-title>. In <conf-name>Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics</conf-name>, pages <fpage>7871</fpage>–<lpage>7880</lpage>, <comment>Online.</comment>
+<publisher-name>Association for Computational Linguistics</publisher-name>.</mixed-citation>
+      </ref>
+      <ref id="R26">
+        <mixed-citation publication-type="confproc"><name><surname>Li</surname><given-names>Junyi Jessy</given-names></name>, <name><surname>O’Daniel</surname><given-names>Bridget</given-names></name>, <name><surname>Wu</surname><given-names>Yi</given-names></name>, <name><surname>Zhao</surname><given-names>Wenli</given-names></name>, and <name><surname>Nenkova</surname><given-names>Ani</given-names></name>. <year>2016</year>. <article-title>Improving the annotation of sentence specificity</article-title>. In <conf-name>Proceedings of the Tenth International Conference on Language Resources and Evaluation (LREC’16)</conf-name>, pages <fpage>3921</fpage>–<lpage>3927</lpage>, <conf-loc>Portorož, Slovenia</conf-loc>. <publisher-name>European Language Resources Association (ELRA)</publisher-name>.</mixed-citation>
+      </ref>
+      <ref id="R27">
+        <mixed-citation publication-type="other"><name><surname>Liu</surname><given-names>Yinhan</given-names></name>, <name><surname>Ott</surname><given-names>Myle</given-names></name>, <name><surname>Goyal</surname><given-names>Naman</given-names></name>, <name><surname>Du</surname><given-names>Jingfei</given-names></name>, <name><surname>Joshi</surname><given-names>Mandar</given-names></name>, <name><surname>Chen</surname><given-names>Danqi</given-names></name>, <name><surname>Levy</surname><given-names>Omer</given-names></name>, <name><surname>Lewis</surname><given-names>Mike</given-names></name>, <name><surname>Zettlemoyer</surname><given-names>Luke</given-names></name>, and <name><surname>Stoyanov</surname><given-names>Veselin</given-names></name>. <year>2019</year>. <source>Roberta: A robustly optimized bert pretraining approach</source>.</mixed-citation>
+      </ref>
+      <ref id="R28">
+        <mixed-citation publication-type="confproc"><name><surname>Maddela</surname><given-names>Mounica</given-names></name>, <name><surname>Alva-Manchego</surname><given-names>Fernando</given-names></name>, and <name><surname>Xu</surname><given-names>Wei</given-names></name>. <year>2021</year>. <article-title>Controllable text simplification with explicit paraphrasing</article-title>. In <conf-name>Proceedings of the 2021 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies</conf-name>, pages <fpage>3536</fpage>–<lpage>3553</lpage>, <comment>Online.</comment>
+<publisher-name>Association for Computational Linguistics</publisher-name>.</mixed-citation>
+      </ref>
+      <ref id="R29">
+        <mixed-citation publication-type="confproc"><name><surname>Martin</surname><given-names>Louis</given-names></name>, <name><surname>de la Clergerie</surname><given-names>Éric</given-names></name>, <name><surname>Sagot</surname><given-names>Benoît</given-names></name>, and <name><surname>Bordes</surname><given-names>Antoine</given-names></name>. <year>2020</year>. <article-title>Controllable sentence simplification</article-title>. In <conf-name>Proceedings of the 12th Language Resources and Evaluation Conference</conf-name>, pages <fpage>4689</fpage>–<lpage>4698</lpage>, <conf-loc>Marseille, France</conf-loc>. <publisher-name>European Language Resources Association</publisher-name>.</mixed-citation>
+      </ref>
+      <ref id="R30">
+        <mixed-citation publication-type="confproc"><name><surname>Maynez</surname><given-names>Joshua</given-names></name>, <name><surname>Narayan</surname><given-names>Shashi</given-names></name>, <name><surname>Bohnet</surname><given-names>Bernd</given-names></name>, and <name><surname>McDonald</surname><given-names>Ryan</given-names></name>. <year>2020</year>. <article-title>On faithfulness and factuality in abstractive summarization</article-title>. In <conf-name>Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics</conf-name>, pages <fpage>1906</fpage>–<lpage>1919</lpage>, <comment>Online.</comment>
+<publisher-name>Association for Computational Linguistics</publisher-name>.</mixed-citation>
+      </ref>
+      <ref id="R31">
+        <mixed-citation publication-type="confproc"><name><surname>Narayan</surname><given-names>Shashi</given-names></name>, <name><surname>Cohen</surname><given-names>Shay B.</given-names></name>, and <name><surname>Lapata</surname><given-names>Mirella</given-names></name>. <year>2018</year>. <article-title>Don’t give me the details, just the summary! topic-aware convolutional neural networks for extreme summarization</article-title>. In <conf-name>Proceedings of the 2018 Conference on Empirical Methods in Natural Language Processing</conf-name>, pages <fpage>1797</fpage>–<lpage>1807</lpage>, <conf-loc>Brussels, Belgium</conf-loc>. <publisher-name>Association for Computational Linguistics</publisher-name>.</mixed-citation>
+      </ref>
+      <ref id="R32">
+        <mixed-citation publication-type="confproc"><name><surname>Pagnoni</surname><given-names>Artidoro</given-names></name>, <name><surname>Balachandran</surname><given-names>Vidhisha</given-names></name>, and <name><surname>Tsvetkov</surname><given-names>Yulia</given-names></name>. <year>2021</year>. <article-title>Understanding factuality in abstractive summarization with FRANK: A benchmark for factuality metrics</article-title>. In <conf-name>Proceedings of the 2021 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies</conf-name>, pages <fpage>4812</fpage>–<lpage>4829</lpage>, <comment>Online.</comment>
+<publisher-name>Association for Computational Linguistics</publisher-name>.</mixed-citation>
+      </ref>
+      <ref id="R33">
+        <mixed-citation publication-type="confproc"><name><surname>Pennington</surname><given-names>Jeffrey</given-names></name>, <name><surname>Socher</surname><given-names>Richard</given-names></name>, and <name><surname>Manning</surname><given-names>Christopher</given-names></name>. <year>2014</year>. <article-title>GloVe: Global vectors for word representation</article-title>. In <conf-name>Proceedings of the 2014 Conference on Empirical Methods in Natural Language Processing (EMNLP)</conf-name>, pages <fpage>1532</fpage>–<lpage>1543</lpage>, <conf-loc>Doha, Qatar</conf-loc>. <publisher-name>Association for Computational Linguistics</publisher-name>.</mixed-citation>
+      </ref>
+      <ref id="R34">
+        <mixed-citation publication-type="confproc"><name><surname>Peters</surname><given-names>Matthew E.</given-names></name>, <name><surname>Neumann</surname><given-names>Mark</given-names></name>, <name><surname>Iyyer</surname><given-names>Mohit</given-names></name>, <name><surname>Gardner</surname><given-names>Matt</given-names></name>, <name><surname>Clark</surname><given-names>Christopher</given-names></name>, <name><surname>Lee</surname><given-names>Kenton</given-names></name>, and <name><surname>Zettlemoyer</surname><given-names>Luke</given-names></name>. <year>2018</year>. <article-title>Deep contextualized word representations</article-title>. In <conf-name>Proceedings of the 2018 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies</conf-name>, Volume <volume>1</volume> (<comment>Long Papers</comment>), pages <fpage>2227</fpage>–<lpage>2237</lpage>, <conf-loc>New Orleans, Louisiana</conf-loc>. <publisher-name>Association for Computational Linguistics</publisher-name>.</mixed-citation>
+      </ref>
+      <ref id="R35">
+        <mixed-citation publication-type="journal"><name><surname>Raffel</surname><given-names>Colin</given-names></name>, <name><surname>Shazeer</surname><given-names>Noam</given-names></name>, <name><surname>Roberts</surname><given-names>Adam</given-names></name>, <name><surname>Lee</surname><given-names>Katherine</given-names></name>, <name><surname>Narang</surname><given-names>Sharan</given-names></name>, <name><surname>Matena</surname><given-names>Michael</given-names></name>, <name><surname>Zhou</surname><given-names>Yanqi</given-names></name>, <name><surname>Li</surname><given-names>Wei</given-names></name>, and <name><surname>Liu</surname><given-names>Peter J.</given-names></name>. <year>2020</year>. <article-title>Exploring the limits of transfer learning with a unified text-to-text transformer</article-title>. <source>Journal of Machine Learning Research</source>, <volume>21</volume>(<issue>140</issue>):<fpage>1</fpage>–<lpage>67</lpage>.<pub-id pub-id-type="pmid">34305477</pub-id></mixed-citation>
+      </ref>
+      <ref id="R36">
+        <mixed-citation publication-type="confproc"><name><surname>Reimers</surname><given-names>Nils</given-names></name> and <name><surname>Gurevych</surname><given-names>Iryna</given-names></name>. <year>2019</year>. <article-title>Sentence-BERT: Sentence embeddings using Siamese BERT-networks</article-title>. In <conf-name>Proceedings of the 2019 Conference on Empirical Methods in Natural Language Processing and the 9th International Joint Conference on Natural Language Processing (EMNLP-IJCNLP)</conf-name>, pages <fpage>3982</fpage>–<lpage>3992</lpage>, <conf-loc>Hong Kong, China</conf-loc>. <publisher-name>Association for Computational Linguistics</publisher-name>.</mixed-citation>
+      </ref>
+      <ref id="R37">
+        <mixed-citation publication-type="confproc"><name><surname>Rello</surname><given-names>Luz</given-names></name>, <name><surname>Baeza-Yates</surname><given-names>Ricardo</given-names></name>, <name><surname>Dempere-Marco</surname><given-names>Laura</given-names></name>, and <name><surname>Saggion</surname><given-names>Horacio</given-names></name>. <year>2013</year>. <article-title>Frequent words improve readability and short words improve understandability for people with dyslexia</article-title>. In <conf-name>Human-Computer Interaction – INTERACT 2013</conf-name>, pages <fpage>203</fpage>–<lpage>219</lpage>, <conf-loc>Berlin, Heidelberg</conf-loc>. <publisher-name>Springer Berlin Heidelberg</publisher-name>.</mixed-citation>
+      </ref>
+      <ref id="R38">
+        <mixed-citation publication-type="journal"><name><surname>Spearman</surname><given-names>Charles</given-names></name>. <year>1904</year>. <article-title>The proof and measurement of association between two things</article-title>. <source>American Journal of Psychology</source>, <volume>15</volume>:<fpage>72</fpage>–<lpage>101</lpage>.</mixed-citation>
+      </ref>
+      <ref id="R39">
+        <mixed-citation publication-type="confproc"><name><surname>Sun</surname><given-names>Renliang</given-names></name>, <name><surname>Lin</surname><given-names>Zhe</given-names></name>, and <name><surname>Wan</surname><given-names>Xiaojun</given-names></name>. <year>2020</year>. <article-title>On the helpfulness of document context to sentence simplification</article-title>. In <conf-name>Proceedings of the 28th International Conference on Computational Linguistics</conf-name>, pages <fpage>1411</fpage>–<lpage>1423</lpage>, <conf-loc>Barcelona, Spain</conf-loc> (<comment>Online</comment>). <publisher-name>International Committee on Computational Linguistics</publisher-name>.</mixed-citation>
+      </ref>
+      <ref id="R40">
+        <mixed-citation publication-type="book"><name><surname>Van Dijk</surname><given-names>Teun A</given-names></name>. <year>2013</year>. <source>News as discourse</source>. <publisher-name>Routledge</publisher-name>.</mixed-citation>
+      </ref>
+      <ref id="R41">
+        <mixed-citation publication-type="confproc"><name><surname>Wallace</surname><given-names>Byron C.</given-names></name>, <name><surname>Saha</surname><given-names>Sayantan</given-names></name>, <name><surname>Soboczenski</surname><given-names>Frank</given-names></name>, and <name><surname>Marshall</surname><given-names>Iain J.</given-names></name>. <year>2021</year>. <article-title>Generating (Factual?) Narrative Summaries of RCTs: Experiments with Neural Multi-Document Summarization</article-title>. In <conf-name>Proceedings of AMIA Informatics Summit</conf-name>.</mixed-citation>
+      </ref>
+      <ref id="R42">
+        <mixed-citation publication-type="confproc"><name><surname>Wang</surname><given-names>Alex</given-names></name>, <name><surname>Cho</surname><given-names>Kyunghyun</given-names></name>, and <name><surname>Lewis</surname><given-names>Mike</given-names></name>. <year>2020a</year>. <article-title>Asking and answering questions to evaluate the factual consistency of summaries</article-title>. In <conf-name>Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics</conf-name>, pages <fpage>5008</fpage>–<lpage>5020</lpage>, <comment>Online.</comment>
+<publisher-name>Association for Computational Linguistics</publisher-name>.</mixed-citation>
+      </ref>
+      <ref id="R43">
+        <mixed-citation publication-type="confproc"><name><surname>Wang</surname><given-names>Alex</given-names></name>, <name><surname>Cho</surname><given-names>Kyunghyun</given-names></name>, and <name><surname>Lewis</surname><given-names>Mike</given-names></name>. <year>2020b</year>. <article-title>Asking and answering questions to evaluate the factual consistency of summaries</article-title>. <conf-name>Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics</conf-name>.</mixed-citation>
+      </ref>
+      <ref id="R44">
+        <mixed-citation publication-type="journal"><name><surname>Williams</surname><given-names>Ronald J</given-names></name>. <year>1992</year>. <article-title>Simple statistical gradient-following algorithms for connectionist reinforcement learning</article-title>. <source>Machine learning</source>, <volume>8</volume>(<issue>3</issue>):<fpage>229</fpage>–<lpage>256</lpage>.</mixed-citation>
+      </ref>
+      <ref id="R45">
+        <mixed-citation publication-type="journal"><name><surname>Xu</surname><given-names>Wei</given-names></name>, <name><surname>Callison-Burch</surname><given-names>Chris</given-names></name>, and <name><surname>Napoles</surname><given-names>Courtney</given-names></name>. <year>2015</year>. <article-title>Problems in current text simplification research: New data can help</article-title>. <source>Transactions of the Association for Computational Linguistics</source>, <volume>3</volume>:<fpage>283</fpage>–<lpage>297</lpage>.</mixed-citation>
+      </ref>
+      <ref id="R46">
+        <mixed-citation publication-type="journal"><name><surname>Xu</surname><given-names>Wei</given-names></name>, <name><surname>Napoles</surname><given-names>Courtney</given-names></name>, <name><surname>Pavlick</surname><given-names>Ellie</given-names></name>, <name><surname>Chen</surname><given-names>Quanze</given-names></name>, and <name><surname>Callison-Burch</surname><given-names>Chris</given-names></name>. <year>2016</year>. <article-title>Optimizing statistical machine translation for text simplification</article-title>. <source>Transactions of the Association for Computational Linguistics</source>, <volume>4</volume>:<fpage>401</fpage>–<lpage>415</lpage>.</mixed-citation>
+      </ref>
+      <ref id="R47">
+        <mixed-citation publication-type="confproc"><name><surname>Xu</surname><given-names>Xinnuo</given-names></name>, <name><surname>Dušek</surname><given-names>Ondřej</given-names></name>, <name><surname>Li</surname><given-names>Jingyi</given-names></name>, <name><surname>Rieser</surname><given-names>Verena</given-names></name>, and <name><surname>Konstas</surname><given-names>Ioannis</given-names></name>. <year>2020</year>. <article-title>Fact-based content weighting for evaluating abstractive summarisation</article-title>. In <conf-name>Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics</conf-name>, pages <fpage>5071</fpage>–<lpage>5081</lpage>, <comment>Online.</comment>
+<publisher-name>Association for Computational Linguistics</publisher-name>.</mixed-citation>
+      </ref>
+      <ref id="R48">
+        <mixed-citation publication-type="journal"><name><surname>Yano</surname><given-names>Yasukata</given-names></name>, <name><surname>Long</surname><given-names>Michael H</given-names></name>, and <name><surname>Ross</surname><given-names>Steven</given-names></name>. <year>1994</year>. <article-title>The effects of simplified and elaborated texts on foreign language reading comprehension</article-title>. <source>Language learning</source>, <volume>44</volume>(<issue>2</issue>):<fpage>189</fpage>–<lpage>219</lpage>.</mixed-citation>
+      </ref>
+      <ref id="R49">
+        <mixed-citation publication-type="confproc"><name><surname>Zhang</surname><given-names>Tianyi</given-names></name>, <name><surname>Kishore</surname><given-names>Varsha</given-names></name>, <name><surname>Wu</surname><given-names>Felix</given-names></name>, <name><surname>Weinberger</surname><given-names>Kilian Q</given-names></name>, and <name><surname>Artzi</surname><given-names>Yoav</given-names></name>. <year>2019</year>. <article-title>Bertscore: Evaluating text generation with bert</article-title>. <conf-name>Eighth International Conference on Learning Representations</conf-name>.</mixed-citation>
+      </ref>
+      <ref id="R50">
+        <mixed-citation publication-type="confproc"><name><surname>Zhang</surname><given-names>Xingxing</given-names></name> and <name><surname>Lapata</surname><given-names>Mirella</given-names></name>. <year>2017</year>. <article-title>Sentence simplification with deep reinforcement learning</article-title>. In <conf-name>Proceedings of the 2017 Conference on Empirical Methods in Natural Language Processing</conf-name>, pages <fpage>584</fpage>–<lpage>594</lpage>, <conf-loc>Copenhagen, Denmark</conf-loc>. <publisher-name>Association for Computational Linguistics</publisher-name>.</mixed-citation>
+      </ref>
+      <ref id="R51">
+        <mixed-citation publication-type="confproc"><name><surname>Zhao</surname><given-names>Yanbin</given-names></name>, <name><surname>Chen</surname><given-names>Lu</given-names></name>, <name><surname>Chen</surname><given-names>Zhi</given-names></name>, and <name><surname>Yu</surname><given-names>Kai</given-names></name>. <year>2020</year>. <article-title>Semi-supervised text simplification with back-translation and asymmetric denoising autoencoders</article-title>. <conf-name>Proceedings of the AAAI Conference on Artificial Intelligence</conf-name>, <volume>34</volume>(<issue>05</issue>):<fpage>9668</fpage>–<lpage>9675</lpage>.</mixed-citation>
+      </ref>
+    </ref-list>
+  </back>
+  <floats-group>
+    <fig position="float" id="F1">
+      <label>Figure 1:</label>
+      <caption>
+        <p id="P111">The full annotation scheme: 0: no/trivial change; 1: nontrivial but preserves main idea; 2: does not preserve main idea; −1: gibberish. The −1 label is applicable to all three categories.</p>
+      </caption>
+      <graphic xlink:href="nihms-1847771-f0001" position="float"/>
+    </fig>
+    <table-wrap position="float" id="T5">
+      <label>Table 1:</label>
+      <caption>
+        <p id="P112">Original texts from the Wiki, news, and medical domains with corresponding outputs from simplification systems. Models introduce factual errors.</p>
+      </caption>
+      <table frame="hsides" rules="rows">
+        <colgroup span="1">
+          <col align="left" valign="middle" span="1"/>
+          <col align="left" valign="middle" span="1"/>
+        </colgroup>
+        <tbody>
+          <tr>
+            <td align="left" valign="top" rowspan="1" colspan="1">(1)</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">
+<p id="P161">
+<disp-quote id="Q11"><p id="P162"><bold>[Original]</bold> There was no difference in operating time or perioperative complication rates.</p><p id="P163"><bold>[Model simplified]</bold> However, there was not enough evidence to determine if there was an important difference in operative time or complication rates <styled-content style="color:#FF0000">when compared to conventional surgery.</styled-content></p></disp-quote>
+</p>
+</td>
+          </tr>
+          <tr>
+            <td align="left" valign="top" rowspan="1" colspan="1">(2)</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">
+<p id="P169">
+<disp-quote id="Q22"><p id="P170"><bold>[Original]</bold> All studies were associated with methodological limitations.</p><p id="P164"><bold>[Model simplified]</bold> All studies <styled-content style="color:#FF0000">were of poor quality</styled-content> and had limitations in the way they were conducted.</p></disp-quote>
+</p>
+</td>
+          </tr>
+          <tr>
+            <td align="left" valign="top" rowspan="1" colspan="1">(3)</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">
+<p id="P171">
+<disp-quote id="Q23"><p id="P172"><bold>[Original]</bold> On June 24 1979 (the 750th anniversary of the village), Glinde <styled-content style="color:#0000FF">received its town charter</styled-content>.</p><p id="P165"><bold>[Model simplified]</bold> On June 24 1979, the 750th anniversary of the village <styled-content style="color:#FF0000">was renamed</styled-content>.</p></disp-quote>
+</p>
+</td>
+          </tr>
+          <tr>
+            <td align="left" valign="top" rowspan="1" colspan="1">(4)</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">
+<p id="P173">
+<disp-quote id="Q24"><p id="P174"><bold>[Original]</bold> Others agreed with the federal court; they started <styled-content style="color:#0000FF">marrying</styled-content> people in the morning.</p><p id="P166"><bold>[Model simplified]</bold> Others agreed with the federal court; they started <styled-content style="color:#FF0000">trying</styled-content> in morning.</p></disp-quote>
+</p>
+</td>
+          </tr>
+          <tr>
+            <td align="left" valign="top" rowspan="1" colspan="1">(5)</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">
+<p id="P175">
+<disp-quote id="Q25"><p id="P176"><bold>[Original]</bold> In 2014, Mary Barra became CEO of General Motors, making her the first female CEO of a major automobile company.</p><p id="P167"><bold>[Model simplified]</bold> Also, just one woman leads a major automobile company. <styled-content style="color:#FF0000"><italic toggle="yes">Omitted main subject</italic>.</styled-content></p></disp-quote>
+</p>
+</td>
+          </tr>
+        </tbody>
+      </table>
+    </table-wrap>
+    <table-wrap position="float" id="T6">
+      <label>Table 2:</label>
+      <caption>
+        <p id="P113">Illustrative examples of the three categories of information errors. Not from a real dataset.</p>
+      </caption>
+      <table frame="hsides" rules="groups">
+        <colgroup span="1">
+          <col align="left" valign="middle" span="1"/>
+          <col align="left" valign="middle" span="1"/>
+        </colgroup>
+        <thead>
+          <tr>
+            <th align="left" valign="middle" rowspan="1" colspan="1">Category</th>
+            <th align="left" valign="middle" rowspan="1" colspan="1">Original/Simplified Sentences</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td align="left" valign="top" rowspan="1" colspan="1">Insertion</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">
+<p id="P151"><disp-quote id="Q6"><p id="P114"><italic toggle="yes">I went on a trip last week.</italic></p><p id="P115"><italic toggle="yes">I went on a trip to Alaska last week.</italic></p></disp-quote></p>
+</td>
+          </tr>
+          <tr>
+            <td align="left" valign="top" rowspan="1" colspan="1">Deletion</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">
+<p id="P153"><disp-quote id="Q8"><p id="P116"><italic toggle="yes">Yesterday I bought a bagel.</italic></p><p id="P117"><italic toggle="yes">I bought it.</italic></p></disp-quote></p>
+</td>
+          </tr>
+          <tr>
+            <td align="left" valign="top" rowspan="1" colspan="1">Substitution</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">
+<p id="P155"><disp-quote id="Q10"><p id="P118"><italic toggle="yes">The shelter houses 100 cats and 200 dogs.</italic></p><p id="P119"><italic toggle="yes">The shelter houses 200 cats and 200 dogs.</italic></p></disp-quote></p>
+</td>
+          </tr>
+        </tbody>
+      </table>
+    </table-wrap>
+    <table-wrap position="float" id="T7">
+      <label>Table 3:</label>
+      <caption>
+        <p id="P120">Percentage of examples with majority annotator agreement for each category and percentage of examples with a majority nonzero label in which the majority of annotators agreed on the specific label.</p>
+      </caption>
+      <table frame="hsides" rules="groups">
+        <colgroup span="1">
+          <col align="left" valign="middle" span="1"/>
+          <col align="left" valign="middle" span="1"/>
+          <col align="left" valign="middle" span="1"/>
+        </colgroup>
+        <thead>
+          <tr>
+            <th align="left" valign="bottom" style="border-right: solid 1px" rowspan="1" colspan="1">Category</th>
+            <th align="left" valign="bottom" rowspan="1" colspan="1">% Majority Agreement</th>
+            <th align="left" valign="bottom" rowspan="1" colspan="1">% Majority Agr. (non-zero)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">Insertion</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">96</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">77</td>
+          </tr>
+          <tr>
+            <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">Deletion</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">96</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">92</td>
+          </tr>
+          <tr>
+            <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">Substitution</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">95</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">74</td>
+          </tr>
+        </tbody>
+      </table>
+    </table-wrap>
+    <table-wrap position="float" id="T8">
+      <label>Table 4:</label>
+      <caption>
+        <p id="P121">Insertion, deletion, and substitution error distributions (%) in Wikilarge and Newsela test datasets.</p>
+      </caption>
+      <table frame="hsides" rules="groups">
+        <colgroup span="1">
+          <col align="left" valign="middle" span="1"/>
+          <col align="left" valign="middle" span="1"/>
+          <col align="left" valign="middle" span="1"/>
+          <col align="left" valign="middle" span="1"/>
+          <col align="left" valign="middle" span="1"/>
+          <col align="left" valign="middle" span="1"/>
+        </colgroup>
+        <thead>
+          <tr>
+            <th align="left" valign="middle" rowspan="1" colspan="1">Category</th>
+            <th align="left" valign="middle" rowspan="1" colspan="1">Dataset</th>
+            <th align="left" valign="middle" rowspan="1" colspan="1">0</th>
+            <th align="left" valign="middle" rowspan="1" colspan="1">1</th>
+            <th align="left" valign="middle" rowspan="1" colspan="1">2</th>
+            <th align="left" valign="middle" rowspan="1" colspan="1">−1</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td align="left" valign="top" rowspan="1" colspan="1">Insertion</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">Wikilarge</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">91.1</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">6.3</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">0.3</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">2.3</td>
+          </tr>
+          <tr>
+            <td align="left" valign="top" rowspan="1" colspan="1"/>
+            <td align="left" valign="top" rowspan="1" colspan="1">Newsela</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">68.2</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">20.2</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">11.1</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">0.5</td>
+          </tr>
+          <tr>
+            <td align="left" valign="top" rowspan="1" colspan="1">Deletion</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">Wikilarge</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">76.2</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">18.0</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">3.5</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">2.3</td>
+          </tr>
+          <tr>
+            <td align="left" valign="top" rowspan="1" colspan="1"/>
+            <td align="left" valign="top" rowspan="1" colspan="1">Newsela</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">15.8</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">40.8</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">42.9</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">0.5</td>
+          </tr>
+          <tr>
+            <td align="left" valign="top" rowspan="1" colspan="1">Substitution</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">Wikilarge</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">90.1</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">6.7</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">0.9</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">2.3</td>
+          </tr>
+          <tr>
+            <td align="left" valign="top" rowspan="1" colspan="1"/>
+            <td align="left" valign="top" rowspan="1" colspan="1">Newsela</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">94.9</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">3.8</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">0.8</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">0.5</td>
+          </tr>
+        </tbody>
+      </table>
+    </table-wrap>
+    <table-wrap position="float" id="T9" orientation="landscape">
+      <label>Table 5:</label>
+      <caption>
+        <p id="P122">% length change (left) and normalized edit distances (right) in simplified sentences in each insertion and deletion error category (mean ± standard deviation).</p>
+      </caption>
+      <table frame="hsides" rules="groups">
+        <colgroup span="1">
+          <col align="left" valign="middle" span="1"/>
+          <col align="left" valign="middle" span="1"/>
+          <col align="left" valign="middle" span="1"/>
+          <col align="left" valign="middle" span="1"/>
+          <col align="left" valign="middle" span="1"/>
+          <col align="left" valign="middle" span="1"/>
+          <col align="left" valign="middle" span="1"/>
+          <col align="left" valign="middle" span="1"/>
+        </colgroup>
+        <thead>
+          <tr>
+            <th rowspan="2" align="center" valign="middle" colspan="1"/>
+            <th rowspan="2" align="center" valign="middle" style="border-right: solid 1px" colspan="1"/>
+            <th colspan="3" align="center" valign="middle" style="border-right: solid 1px" rowspan="1">% length change</th>
+            <th colspan="3" align="center" valign="middle" rowspan="1">Normalized edit distance</th>
+          </tr>
+          <tr>
+            <th align="left" valign="middle" rowspan="1" colspan="1">Level 0</th>
+            <th align="left" valign="middle" rowspan="1" colspan="1">Level 1</th>
+            <th align="left" valign="middle" style="border-right: solid 1px" rowspan="1" colspan="1">Level 2</th>
+            <th align="left" valign="middle" rowspan="1" colspan="1">Level 0</th>
+            <th align="left" valign="middle" rowspan="1" colspan="1">Level 1</th>
+            <th align="left" valign="middle" rowspan="1" colspan="1">Level 2</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td rowspan="2" align="left" valign="top" colspan="1">
+<bold>Insertion</bold>
+</td>
+            <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">Wikilarge</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">−5.0 (17.0)</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">22.4 (36.9)</td>
+            <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">7.1 (0.0)</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">0.20 (0.20)</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">0.55 (0.40)</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">0.58 (0.0)</td>
+          </tr>
+          <tr>
+            <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">Newsela</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">−39.4 (23.8)</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">−19.0 (36.9)</td>
+            <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">−38.3 (29.0)</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">0.41 (0.17)</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">0.51 (0.21)</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">0.54 (0.04)</td>
+          </tr>
+          <tr style="border-top: solid 1px">
+            <td rowspan="2" align="left" valign="top" colspan="1">
+<bold>Deletion</bold>
+</td>
+            <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">Wikilarge</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">2.8 (15.8)</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">−22.3 (18.9)</td>
+            <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">−35.9 (15.9)</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">0.19 (0.23)</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">0.35 (0.18)</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">0.39 (0.14)</td>
+          </tr>
+          <tr>
+            <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">Newsela</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">1.5 (27.6)</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">−34.8 (23.1)</td>
+            <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">−49.6 (22.8)</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">0.34 (0.31)</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">0.46 (0.13)</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">0.53 (0.10)</td>
+          </tr>
+        </tbody>
+      </table>
+    </table-wrap>
+    <table-wrap position="float" id="T10" orientation="landscape">
+      <label>Table 6:</label>
+      <caption>
+        <p id="P123">SARI and error distributions in system outputs manually evaluated.</p>
+      </caption>
+      <table frame="hsides" rules="groups">
+        <colgroup span="1">
+          <col align="left" valign="middle" span="1"/>
+          <col align="left" valign="middle" span="1"/>
+          <col align="left" valign="middle" span="1"/>
+          <col align="left" valign="middle" span="1"/>
+          <col align="left" valign="middle" span="1"/>
+          <col align="left" valign="middle" span="1"/>
+          <col align="left" valign="middle" span="1"/>
+          <col align="left" valign="middle" span="1"/>
+          <col align="left" valign="middle" span="1"/>
+          <col align="left" valign="middle" span="1"/>
+          <col align="left" valign="middle" span="1"/>
+          <col align="left" valign="middle" span="1"/>
+          <col align="left" valign="middle" span="1"/>
+          <col align="left" valign="middle" span="1"/>
+          <col align="left" valign="middle" span="1"/>
+        </colgroup>
+        <thead>
+          <tr style="border-bottom: solid 1px">
+            <th align="center" valign="middle" rowspan="1" colspan="1"/>
+            <th align="center" valign="middle" style="border-right: solid 1px" rowspan="1" colspan="1"/>
+            <th align="center" valign="middle" style="border-right: solid 1px" rowspan="1" colspan="1"/>
+            <th colspan="4" align="center" valign="middle" style="border-right: solid 1px" rowspan="1">Insertion</th>
+            <th colspan="4" align="center" valign="middle" style="border-right: solid 1px" rowspan="1">Deletion</th>
+            <th colspan="4" align="center" valign="middle" rowspan="1">Substitution</th>
+          </tr>
+          <tr>
+            <th align="left" valign="middle" rowspan="1" colspan="1">Model</th>
+            <th align="left" valign="middle" style="border-right: solid 1px" rowspan="1" colspan="1">Dataset</th>
+            <th align="left" valign="middle" style="border-right: solid 1px" rowspan="1" colspan="1">SARI</th>
+            <th align="left" valign="middle" rowspan="1" colspan="1">0</th>
+            <th align="left" valign="middle" rowspan="1" colspan="1">1</th>
+            <th align="left" valign="middle" rowspan="1" colspan="1">2</th>
+            <th align="left" valign="middle" style="border-right: solid 1px" rowspan="1" colspan="1">−1</th>
+            <th align="left" valign="middle" rowspan="1" colspan="1">0</th>
+            <th align="left" valign="middle" rowspan="1" colspan="1">1</th>
+            <th align="left" valign="middle" rowspan="1" colspan="1">2</th>
+            <th align="left" valign="middle" style="border-right: solid 1px" rowspan="1" colspan="1">−1</th>
+            <th align="left" valign="middle" rowspan="1" colspan="1">0</th>
+            <th align="left" valign="middle" rowspan="1" colspan="1">1</th>
+            <th align="left" valign="middle" rowspan="1" colspan="1">2</th>
+            <th align="left" valign="middle" rowspan="1" colspan="1">−1</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td rowspan="2" align="left" valign="top" colspan="1">Dress</td>
+            <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">Wikilarge</td>
+            <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">34.9</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">91.9</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">0.8</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">0.8</td>
+            <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">6.5</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">42.6</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">24.6</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">26.2</td>
+            <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">6.6</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">84.4</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">4.1</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">4.9</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">6.6</td>
+          </tr>
+          <tr>
+            <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">Newsela</td>
+            <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">34.5</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">90.5</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">0.0</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">0.0</td>
+            <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">9.5</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">29.9</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">29.2</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">32.1</td>
+            <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">9.7</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">67.4</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">6.5</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">15.9</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">10.1</td>
+          </tr>
+          <tr>
+            <td rowspan="2" align="left" valign="top" colspan="1">EditNTS</td>
+            <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">Wikilarge</td>
+            <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">40.4</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">94.3</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">4.9</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">0.8</td>
+            <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">0.0</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">55.0</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">24.2</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">20.8</td>
+            <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">0.0</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">88.5</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">4.1</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">7.4</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">0.0</td>
+          </tr>
+          <tr>
+            <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">Newsela</td>
+            <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">36.3</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">69.4</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">0.7</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">2.7</td>
+            <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">27.2</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">9.5</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">19.0</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">44.2</td>
+            <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">27.2</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">64.4</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">2.1</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">6.2</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">27.4</td>
+          </tr>
+          <tr>
+            <td rowspan="2" align="left" valign="top" colspan="1">T5</td>
+            <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">Wikilarge</td>
+            <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">34.9</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">96.8</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">1.6</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">0.8</td>
+            <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">0.8</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">81.6</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">14.4</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">3.2</td>
+            <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">0.8</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">97.6</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">1.6</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">0.0</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">0.8</td>
+          </tr>
+          <tr>
+            <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">Newsela</td>
+            <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">38.6</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">81.7</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">9.6</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">7.0</td>
+            <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">1.7</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">27.7</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">43.7</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">26.9</td>
+            <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">1.7</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">92.4</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">5.9</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">0.0</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">1.7</td>
+          </tr>
+          <tr>
+            <td align="left" valign="top" rowspan="1" colspan="1">Access</td>
+            <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">Wikilarge</td>
+            <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">49.7</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">89.1</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">8.2</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">0.9</td>
+            <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">1.8</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">57.5</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">34.9</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">5.7</td>
+            <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">1.9</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">71.1</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">18.6</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">8.2</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">2.1</td>
+          </tr>
+          <tr>
+            <td align="left" valign="top" rowspan="1" colspan="1">ControlTS</td>
+            <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">Wikilarge</td>
+            <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">42.3</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">88.8</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">7.8</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">1.7</td>
+            <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">1.7</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">47.8</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">39.1</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">11.3</td>
+            <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">1.7</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">81.5</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">15.1</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">1.7</td>
+            <td align="left" valign="top" rowspan="1" colspan="1">1.7</td>
+          </tr>
+        </tbody>
+      </table>
+    </table-wrap>
+    <table-wrap position="float" id="T11">
+      <label>Table 7:</label>
+      <caption>
+        <p id="P124">Spearman’s rank correlation coefficients for SARI vs. each information error category (<bold>I</bold>nsertion, <bold>D</bold>eletion, <bold>S</bold>ubstitution).</p>
+      </caption>
+      <table frame="hsides" rules="groups">
+        <colgroup span="1">
+          <col align="left" valign="middle" span="1"/>
+          <col align="left" valign="middle" span="1"/>
+          <col align="left" valign="middle" span="1"/>
+          <col align="left" valign="middle" span="1"/>
+          <col align="left" valign="middle" span="1"/>
+        </colgroup>
+        <thead>
+          <tr>
+            <th align="left" valign="middle" rowspan="1" colspan="1">Model</th>
+            <th align="left" valign="middle" style="border-right: solid 1px" rowspan="1" colspan="1">Dataset</th>
+            <th align="left" valign="middle" rowspan="1" colspan="1">I</th>
+            <th align="left" valign="middle" rowspan="1" colspan="1">D</th>
+            <th align="left" valign="middle" rowspan="1" colspan="1">S</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td rowspan="2" align="left" valign="top" colspan="1">Dress</td>
+            <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">Wikilarge</td>
+            <td align="center" valign="top" rowspan="1" colspan="1">0.038</td>
+            <td align="center" valign="top" rowspan="1" colspan="1">−0.041</td>
+            <td align="center" valign="top" rowspan="1" colspan="1">0.156</td>
+          </tr>
+          <tr>
+            <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">Newsela</td>
+            <td align="center" valign="top" rowspan="1" colspan="1">0.105</td>
+            <td align="center" valign="top" rowspan="1" colspan="1">0.267</td>
+            <td align="center" valign="top" rowspan="1" colspan="1">0.258</td>
+          </tr>
+          <tr>
+            <td rowspan="2" align="left" valign="top" colspan="1">EditNTS</td>
+            <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">Wikilarge</td>
+            <td align="center" valign="top" rowspan="1" colspan="1">0.011</td>
+            <td align="center" valign="top" rowspan="1" colspan="1">−0.275</td>
+            <td align="center" valign="top" rowspan="1" colspan="1">0.034</td>
+          </tr>
+          <tr>
+            <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">Newsela</td>
+            <td align="center" valign="top" rowspan="1" colspan="1">−0.144</td>
+            <td align="center" valign="top" rowspan="1" colspan="1">−0.103</td>
+            <td align="center" valign="top" rowspan="1" colspan="1">−0.183</td>
+          </tr>
+          <tr>
+            <td rowspan="2" align="left" valign="top" colspan="1">T5</td>
+            <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">Wikilarge</td>
+            <td align="center" valign="top" rowspan="1" colspan="1">−0.050</td>
+            <td align="center" valign="top" rowspan="1" colspan="1">0.134</td>
+            <td align="center" valign="top" rowspan="1" colspan="1">0.027</td>
+          </tr>
+          <tr>
+            <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">Newsela</td>
+            <td align="center" valign="top" rowspan="1" colspan="1">−0.020</td>
+            <td align="center" valign="top" rowspan="1" colspan="1">−0.124</td>
+            <td align="center" valign="top" rowspan="1" colspan="1">0.078</td>
+          </tr>
+          <tr>
+            <td align="left" valign="top" rowspan="1" colspan="1">Access</td>
+            <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">Wikilarge</td>
+            <td align="center" valign="top" rowspan="1" colspan="1">0.035</td>
+            <td align="center" valign="top" rowspan="1" colspan="1">−0.026</td>
+            <td align="center" valign="top" rowspan="1" colspan="1">0.057</td>
+          </tr>
+          <tr>
+            <td align="left" valign="top" rowspan="1" colspan="1">ControlTS</td>
+            <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">Wikilarge</td>
+            <td align="center" valign="top" rowspan="1" colspan="1">0.002</td>
+            <td align="center" valign="top" rowspan="1" colspan="1">−0.054</td>
+            <td align="center" valign="top" rowspan="1" colspan="1">0.262</td>
+          </tr>
+        </tbody>
+      </table>
+    </table-wrap>
+    <table-wrap position="float" id="T12">
+      <label>Table 8:</label>
+      <caption>
+        <p id="P125">Spearman’s rank correlation coefficients for semantic similarity measures vs. each information error category (<bold>I</bold>nsertion, <bold>D</bold>eletion, <bold>S</bold>ubstitution).</p>
+      </caption>
+      <table frame="hsides" rules="groups">
+        <colgroup span="1">
+          <col align="left" valign="middle" span="1"/>
+          <col align="left" valign="middle" span="1"/>
+          <col align="left" valign="middle" span="1"/>
+          <col align="left" valign="middle" span="1"/>
+        </colgroup>
+        <thead>
+          <tr>
+            <th align="left" valign="middle" style="border-right: solid 1px" rowspan="1" colspan="1">Similarity Measure</th>
+            <th align="left" valign="middle" rowspan="1" colspan="1">I</th>
+            <th align="left" valign="middle" rowspan="1" colspan="1">D</th>
+            <th align="left" valign="middle" rowspan="1" colspan="1">S</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">Jaccard Similarity</td>
+            <td align="center" valign="top" rowspan="1" colspan="1">−0.385</td>
+            <td align="center" valign="top" rowspan="1" colspan="1">−0.695</td>
+            <td align="center" valign="top" rowspan="1" colspan="1">−0.101</td>
+          </tr>
+          <tr>
+            <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">Cosine (GloVe)</td>
+            <td align="center" valign="top" rowspan="1" colspan="1">−0.315</td>
+            <td align="center" valign="top" rowspan="1" colspan="1">−0.620</td>
+            <td align="center" valign="top" rowspan="1" colspan="1">−0.066</td>
+          </tr>
+          <tr>
+            <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">Cosine (ELMo)</td>
+            <td align="center" valign="top" rowspan="1" colspan="1">−0.325</td>
+            <td align="center" valign="top" rowspan="1" colspan="1">−0.582</td>
+            <td align="center" valign="top" rowspan="1" colspan="1">−0.065</td>
+          </tr>
+          <tr>
+            <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">Cosine (Sentence BERT)</td>
+            <td align="center" valign="top" rowspan="1" colspan="1">−0.375</td>
+            <td align="center" valign="top" rowspan="1" colspan="1">−0.724</td>
+            <td align="center" valign="top" rowspan="1" colspan="1">−0.182</td>
+          </tr>
+          <tr>
+            <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">BERTScore</td>
+            <td align="center" valign="top" rowspan="1" colspan="1">−0.400</td>
+            <td align="center" valign="top" rowspan="1" colspan="1">−0.748</td>
+            <td align="center" valign="top" rowspan="1" colspan="1">−0.125</td>
+          </tr>
+        </tbody>
+      </table>
+    </table-wrap>
+    <table-wrap position="float" id="T13">
+      <label>Table 9:</label>
+      <caption>
+        <p id="P126">Spearman’s rank correlation coefficients for factuality measures vs. each information error category (<bold>I</bold>nsertion, <bold>D</bold>eletion, <bold>S</bold>ubstitution).</p>
+      </caption>
+      <table frame="hsides" rules="groups">
+        <colgroup span="1">
+          <col align="left" valign="middle" span="1"/>
+          <col align="left" valign="middle" span="1"/>
+          <col align="left" valign="middle" span="1"/>
+          <col align="left" valign="middle" span="1"/>
+        </colgroup>
+        <thead>
+          <tr>
+            <th align="left" valign="middle" style="border-right: solid 1px" rowspan="1" colspan="1">Factuality Measure</th>
+            <th align="left" valign="middle" rowspan="1" colspan="1">I</th>
+            <th align="left" valign="middle" rowspan="1" colspan="1">D</th>
+            <th align="left" valign="middle" rowspan="1" colspan="1">S</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">F<sc>act</sc>-CC</td>
+            <td align="center" valign="top" rowspan="1" colspan="1">0.311</td>
+            <td align="center" valign="top" rowspan="1" colspan="1">0.418</td>
+            <td align="center" valign="top" rowspan="1" colspan="1">0.165</td>
+          </tr>
+          <tr>
+            <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">DAE, <italic toggle="yes">k</italic> = 1</td>
+            <td align="center" valign="top" rowspan="1" colspan="1">0.109</td>
+            <td align="center" valign="top" rowspan="1" colspan="1">0.217</td>
+            <td align="center" valign="top" rowspan="1" colspan="1">0.277</td>
+          </tr>
+          <tr>
+            <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">DAE, <italic toggle="yes">k</italic> = 3</td>
+            <td align="center" valign="top" rowspan="1" colspan="1">0.110</td>
+            <td align="center" valign="top" rowspan="1" colspan="1">0.213</td>
+            <td align="center" valign="top" rowspan="1" colspan="1">0.271</td>
+          </tr>
+          <tr>
+            <td align="left" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">DAE, <italic toggle="yes">k</italic> = 5</td>
+            <td align="center" valign="top" rowspan="1" colspan="1">0.115</td>
+            <td align="center" valign="top" rowspan="1" colspan="1">0.217</td>
+            <td align="center" valign="top" rowspan="1" colspan="1">0.271</td>
+          </tr>
+        </tbody>
+      </table>
+    </table-wrap>
+    <table-wrap position="float" id="T14">
+      <label>Table 10:</label>
+      <caption>
+        <p id="P127">Annotated label counts in the training set, and F1 on the test set.</p>
+      </caption>
+      <table frame="hsides" rules="groups">
+        <colgroup span="1">
+          <col align="left" valign="middle" span="1"/>
+          <col align="left" valign="middle" span="1"/>
+          <col align="left" valign="middle" span="1"/>
+          <col align="left" valign="middle" span="1"/>
+          <col align="left" valign="middle" span="1"/>
+          <col align="left" valign="middle" span="1"/>
+          <col align="left" valign="middle" span="1"/>
+        </colgroup>
+        <thead>
+          <tr>
+            <th rowspan="2" align="center" valign="bottom" style="border-right: solid 1px" colspan="1">Category</th>
+            <th colspan="2" align="center" valign="middle" style="border-right: solid 1px" rowspan="1">Level 0</th>
+            <th colspan="2" align="center" valign="middle" style="border-right: solid 1px" rowspan="1">Level 1</th>
+            <th colspan="2" align="center" valign="middle" rowspan="1">Level 2</th>
+          </tr>
+          <tr>
+            <th align="center" valign="middle" rowspan="1" colspan="1">#</th>
+            <th align="center" valign="middle" style="border-right: solid 1px" rowspan="1" colspan="1">F1</th>
+            <th align="center" valign="middle" rowspan="1" colspan="1">#</th>
+            <th align="center" valign="middle" style="border-right: solid 1px" rowspan="1" colspan="1">F1</th>
+            <th align="center" valign="middle" rowspan="1" colspan="1">#</th>
+            <th align="center" valign="middle" rowspan="1" colspan="1">F1</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td align="center" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">Insertion</td>
+            <td align="center" valign="top" rowspan="1" colspan="1">823</td>
+            <td align="center" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">87.9</td>
+            <td align="center" valign="top" rowspan="1" colspan="1">104</td>
+            <td align="center" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">36.6</td>
+            <td align="center" valign="top" rowspan="1" colspan="1">40</td>
+            <td align="center" valign="top" rowspan="1" colspan="1">30.4</td>
+          </tr>
+          <tr>
+            <td align="center" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">Deletion</td>
+            <td align="center" valign="top" rowspan="1" colspan="1">413</td>
+            <td align="center" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">84.2</td>
+            <td align="center" valign="top" rowspan="1" colspan="1">356</td>
+            <td align="center" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">57.1</td>
+            <td align="center" valign="top" rowspan="1" colspan="1">204</td>
+            <td align="center" valign="top" rowspan="1" colspan="1">52.1</td>
+          </tr>
+          <tr>
+            <td align="center" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">Substitution</td>
+            <td align="center" valign="top" rowspan="1" colspan="1">810</td>
+            <td align="center" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">82.7</td>
+            <td align="center" valign="top" rowspan="1" colspan="1">110</td>
+            <td align="center" valign="top" style="border-right: solid 1px" rowspan="1" colspan="1">19.8</td>
+            <td align="center" valign="top" rowspan="1" colspan="1">33</td>
+            <td align="center" valign="top" rowspan="1" colspan="1">9.5</td>
+          </tr>
+        </tbody>
+      </table>
+    </table-wrap>
+  </floats-group>
+</article>

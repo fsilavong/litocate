@@ -1,0 +1,294 @@
+<!DOCTYPE article PUBLIC "-//NLM//DTD JATS (Z39.96) Journal Archiving and Interchange DTD with MathML3 v1.3 20210610//EN" "JATS-archivearticle1-3-mathml3.dtd">
+<article xmlns:mml="http://www.w3.org/1998/Math/MathML" xmlns:xlink="http://www.w3.org/1999/xlink"
+    dtd-version="1.3" xml:lang="en" article-type="correction">
+    <?properties open_access?>
+    <processing-meta base-tagset="archiving" mathml-version="3.0" table-model="xhtml"
+        tagset-family="jats">
+        <restricted-by>pmc</restricted-by>
+    </processing-meta>
+    <front>
+        <journal-meta>
+            <journal-id journal-id-type="nlm-ta">Front Vet Sci</journal-id>
+            <journal-id journal-id-type="iso-abbrev">Front Vet Sci</journal-id>
+            <journal-id journal-id-type="publisher-id">Front. Vet. Sci.</journal-id>
+            <journal-title-group>
+                <journal-title>Frontiers in Veterinary Science</journal-title>
+            </journal-title-group>
+            <issn pub-type="epub">2297-1769</issn>
+            <publisher>
+                <publisher-name>Frontiers Media S.A.</publisher-name>
+            </publisher>
+        </journal-meta>
+        <article-meta>
+            <article-id pub-id-type="pmc">PMC10034384</article-id>
+            <article-id pub-id-type="doi">10.3389/fvets.2023.1160163</article-id>
+            <article-categories>
+                <subj-group subj-group-type="heading">
+                    <subject>Veterinary Science</subject>
+                    <subj-group>
+                        <subject>Correction</subject>
+                    </subj-group>
+                </subj-group>
+            </article-categories>
+            <title-group>
+                <article-title>Corrigendum: Effect of <italic>Allium sativum</italic> and <italic>Nigella
+                    sativa</italic> on alleviating aluminum toxicity state in the albino rats</article-title>
+            </title-group>
+            <contrib-group>
+                <contrib contrib-type="author">
+                    <name>
+                        <surname>Abdel Ghfar</surname>
+                        <given-names>Sayed Soliman</given-names>
+                    </name>
+                    <xref rid="aff1" ref-type="aff">
+                        <sup>1</sup>
+                    </xref>
+                    <xref rid="fn002" ref-type="author-notes">
+                        <sup>&#x02020;</sup>
+                    </xref>
+                    <uri xlink:href="http://loop.frontiersin.org/people/2075552/overview" />
+                </contrib>
+                <contrib contrib-type="author">
+                    <name>
+                        <surname>Ali</surname>
+                        <given-names>Montaser Elsayed</given-names>
+                    </name>
+                    <xref rid="aff2" ref-type="aff">
+                        <sup>2</sup>
+                    </xref>
+                    <xref rid="fn002" ref-type="author-notes">
+                        <sup>&#x02020;</sup>
+                    </xref>
+                    <xref rid="fn003" ref-type="author-notes">
+                        <sup>&#x02021;</sup>
+                    </xref>
+                    <uri xlink:href="http://loop.frontiersin.org/people/1699168/overview" />
+                </contrib>
+                <contrib contrib-type="author" corresp="yes">
+                    <name>
+                        <surname>Momenah</surname>
+                        <given-names>Maha Abdullah</given-names>
+                    </name>
+                    <xref rid="aff3" ref-type="aff">
+                        <sup>3</sup>
+                    </xref>
+                    <xref rid="c001" ref-type="corresp">
+                        <sup>*</sup>
+                    </xref>
+                    <xref rid="fn004" ref-type="author-notes">
+                        <sup>&#x02021;</sup>
+                    </xref>
+                </contrib>
+                <contrib contrib-type="author">
+                    <name>
+                        <surname>Al-Saeed</surname>
+                        <given-names>Fatimah A.</given-names>
+                    </name>
+                    <xref rid="aff4" ref-type="aff">
+                        <sup>4</sup>
+                    </xref>
+                    <uri xlink:href="http://loop.frontiersin.org/people/2125896/overview" />
+                </contrib>
+                <contrib contrib-type="author">
+                    <name>
+                        <surname>Al-Doaiss</surname>
+                        <given-names>Amin A.</given-names>
+                    </name>
+                    <xref rid="aff4" ref-type="aff">
+                        <sup>4</sup>
+                    </xref>
+                    <uri xlink:href="http://loop.frontiersin.org/people/1960858/overview" />
+                </contrib>
+                <contrib contrib-type="author">
+                    <name>
+                        <surname>Mostafa</surname>
+                        <given-names>Yasser Sabry</given-names>
+                    </name>
+                    <xref rid="aff4" ref-type="aff">
+                        <sup>4</sup>
+                    </xref>
+                    <uri xlink:href="http://loop.frontiersin.org/people/1914257/overview" />
+                </contrib>
+                <contrib contrib-type="author">
+                    <name>
+                        <surname>Ahmed</surname>
+                        <given-names>Ahmed Ezzat</given-names>
+                    </name>
+                    <xref rid="aff4" ref-type="aff">
+                        <sup>4</sup>
+                    </xref>
+                    <xref rid="aff5" ref-type="aff">
+                        <sup>5</sup>
+                    </xref>
+                    <uri xlink:href="http://loop.frontiersin.org/people/1828202/overview" />
+                </contrib>
+                <contrib contrib-type="author">
+                    <name>
+                        <surname>Abdelrahman</surname>
+                        <given-names>Mohamed</given-names>
+                    </name>
+                    <xref rid="aff6" ref-type="aff">
+                        <sup>6</sup>
+                    </xref>
+                    <xref rid="aff7" ref-type="aff">
+                        <sup>7</sup>
+                    </xref>
+                    <uri xlink:href="http://loop.frontiersin.org/people/1617082/overview" />
+                </contrib>
+            </contrib-group>
+            <aff id="aff1"><sup>1</sup><institution>Department of Animal Productions, Faculty of
+                Agriculture, Al-Azhar University</institution>, <addr-line>Cairo</addr-line>, <country>
+                Egypt</country></aff>
+            <aff id="aff2"><sup>2</sup><institution>Department of Animal Productions, Faculty of
+                Agriculture, Al-Azhar University</institution>, <addr-line>Assiut</addr-line>, <country>
+                Egypt</country></aff>
+            <aff id="aff3"><sup>3</sup><institution>Department of Biology, College of Science,
+                Princess Nourah bint Abdulrahman University</institution>, <addr-line>Riyadh</addr-line>
+                , <country>Saudi Arabia</country></aff>
+            <aff id="aff4"><sup>4</sup><institution>Biology Department, College of Science, King
+                Khalid University</institution>, <addr-line>Abha</addr-line>, <country>Saudi Arabia</country></aff>
+            <aff id="aff5"><sup>5</sup><institution>Department of Theriogenology, Obstetrics, and
+                Artificial Insemination, Faculty of Veterinary Medicine, South Valley University</institution>
+                , <addr-line>Qena</addr-line>, <country>Egypt</country></aff>
+            <aff id="aff6"><sup>6</sup><institution>Key Lab of Agricultural Animal Genetics,
+                    Breeding and Reproduction of Ministry of Education, Huazhong Agricultural
+                University</institution> , <addr-line>Wuhan</addr-line>, <country>China</country></aff>
+            <aff id="aff7"><sup>7</sup><institution>Animal Production Department, Faculty of
+                Agriculture, Assiut University</institution>, <addr-line>Asyut</addr-line>, <country>
+                Egypt</country></aff>
+            <author-notes>
+                <fn fn-type="edited-by">
+                    <p>Approved by: Frontiers Editorial Office, Frontiers Media SA, Switzerland</p>
+                </fn>
+                <corresp id="c001">*Correspondence: Maha Abdullah Momenah <email>
+                    mamomenah@pnu.edu.sa</email></corresp>
+                <fn fn-type="other" id="fn001">
+                    <p>This article was submitted to Comparative and Clinical Medicine, a section of
+                        the journal Frontiers in Veterinary Science</p>
+                </fn>
+                <fn fn-type="equal" id="fn002">
+                    <p>&#x02020;These authors have contributed equally to this work</p>
+                </fn>
+                <fn fn-type="other" id="fn003">
+                    <p>&#x02021;ORCID: Montaser Elsayed Ali <ext-link
+                            xlink:href="https://orcid.org/0000-0003-0868-7073" ext-link-type="uri">
+                        orcid.org/0000-0003-0868-7073</ext-link></p>
+                </fn>
+                <fn fn-type="other" id="fn004">
+                    <p>Maha Abdullah Momenah <ext-link
+                            xlink:href="https://orcid.org/0000-0002-1827-0995" ext-link-type="uri">
+                        orcid.org/0000-0002-1827-0995</ext-link></p>
+                </fn>
+            </author-notes>
+            <pub-date pub-type="epub">
+                <day>09</day>
+                <month>3</month>
+                <year>2023</year>
+            </pub-date>
+            <pub-date pub-type="collection">
+                <year>2023</year>
+            </pub-date>
+            <pub-date pub-type="pmc-release">
+                <day>09</day>
+                <month>3</month>
+                <year>2023</year>
+            </pub-date><!--PMC
+            Release delay is 0 months and 0 days and was based on the <pub-date
+            pub-type="epub"/>.-->
+            <volume>10</volume>
+            <elocation-id>1160163</elocation-id>
+            <history>
+                <date date-type="received">
+                    <day>06</day>
+                    <month>2</month>
+                    <year>2023</year>
+                </date>
+                <date date-type="accepted">
+                    <day>21</day>
+                    <month>2</month>
+                    <year>2023</year>
+                </date>
+            </history>
+            <permissions>
+                <copyright-statement>Copyright &#x000a9; 2023 Abdel Ghfar, Ali, Momenah, Al-Saeed,
+                    Al-Doaiss, Mostafa, Ahmed and Abdelrahman.</copyright-statement>
+                <copyright-year>2023</copyright-year>
+                <copyright-holder>Abdel Ghfar, Ali, Momenah, Al-Saeed, Al-Doaiss, Mostafa, Ahmed and
+                    Abdelrahman</copyright-holder>
+                <license>
+                    <ali:license_ref xmlns:ali="http://www.niso.org/schemas/ali/1.0/"
+                        specific-use="textmining" content-type="ccbylicense">
+                        https://creativecommons.org/licenses/by/4.0/</ali:license_ref>
+                    <license-p>This is an open-access article distributed under the terms of the
+                        Creative Commons Attribution License (CC BY). The use, distribution or
+                        reproduction in other forums is permitted, provided the original author(s)
+                        and the copyright owner(s) are credited and that the original publication in
+                        this journal is cited, in accordance with accepted academic practice. No
+                        use, distribution or reproduction is permitted which does not comply with
+                        these terms.</license-p>
+                </license>
+            </permissions>
+            <related-article related-article-type="corrected-article" ext-link-type="doi" id="RA1"
+                xlink:href="10.3389/fvets.2022.1042640" journal-id="Front Vet Sci."
+                journal-id-type="nlm-ta" vol="9" page="1042640">A corrigendum on <article-title>Effect
+                of <italic>Allium sativum</italic> and <italic>Nigella sativa</italic> on
+                alleviating aluminum toxicity state in the albino rats</article-title> by Abdel
+                Ghfar, S. S., Ali, M. E., Momenah, M. A., Al-Saeed, F. A., Al-Doaiss, A. A.,
+                Mostafa, Y. S., Ahmed, A. E., and Abdelrahman, M. (2022). <italic>Front. Vet. Sci</italic>.
+                9:1042640. doi: <object-id>10.3389/fvets.2022.1042640</object-id></related-article>
+            <kwd-group>
+                <kwd>aluminum toxicity</kwd>
+                <kwd>
+                    <italic>Allium sativum</italic>
+                </kwd>
+                <kwd>
+                    <italic>Nigella sativa</italic>
+                </kwd>
+                <kwd>histopathological abnormalities</kwd>
+                <kwd>liver</kwd>
+                <kwd>kidney</kwd>
+                <kwd>testes</kwd>
+            </kwd-group>
+            <counts>
+                <fig-count count="0" />
+                <table-count count="0" />
+                <equation-count count="0" />
+                <ref-count count="0" />
+                <page-count count="2" />
+                <word-count count="745" />
+            </counts>
+        </article-meta>
+    </front>
+    <body>
+        <p>In the published article, there was an error in affiliations 4, 5, 6, 7. Instead of:</p>
+        <p>&#x0201c;<sup>4</sup>Department of Biology, College of Science, King Khalid University,
+            Abha, Saudi Arabia, <sup>5</sup>Department of Theriogenology, Faculty of Veterinary
+            Medicine, South Valley University, Qena, Egypt, <sup>6</sup>Key Lab of Agricultural
+            Animal Genetics, Breeding and Reproduction of Ministry of Education, Huazhong
+            Agricultural University, Wuhan, China, <sup>7</sup>Animal Production Department, Faculty
+            of Agriculture, Assuit University, Asyut, Egypt&#x0201d;</p>
+        <p>The affiliation numbers of these authors should be:</p>
+        <p>&#x0201c;Fatimah A. Al-Saeed<sup>4</sup>, Amin A. Al-Doaiss<sup>4</sup>, Yasser Sabry
+            Mostafa<sup>4</sup>, Ahmed Ezzat Ahmed<sup>4,5</sup> and Mohamed Abdelrahman<sup>6,7</sup>
+            &#x0201d;</p>
+        <p>And affiliations 4, 5, 6 and 7 should be:</p>
+        <p>&#x0201c;<sup>4</sup>Biology Department, College of Science, King Khalid University,
+            Saudi Arabia, <sup>5</sup>Department of Theriogenology, Obstetrics, and Artificial
+            Insemination, Faculty of Veterinary Medicine, South Valley University, Qena, Egypt, <sup>
+            6</sup>Key Lab of Agricultural Animal Genetics, Breeding and Reproduction of Ministry of
+            Education, Huazhong Agricultural University, Wuhan, China, <sup>7</sup>Animal Production
+            Department, Faculty of Agriculture, Assiut University, Asyut, Egypt&#x0201d;</p>
+        <p>The authors apologize for this error and state that this does not change the scientific
+            conclusions of the article in any way. The original article has been updated.</p>
+    </body>
+    <back>
+        <sec sec-type="disclaimer" id="s1">
+            <title>Publisher's note</title>
+            <p>All claims expressed in this article are solely those of the authors and do not
+                necessarily represent those of their affiliated organizations, or those of the
+                publisher, the editors and the reviewers. Any product that may be evaluated in this
+                article, or claim that may be made by its manufacturer, is not guaranteed or
+                endorsed by the publisher.</p>
+        </sec>
+    </back>
+</article>

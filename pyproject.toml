@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "litocate"
+version = "0.1.0"
+description = ""
+authors = ["CodingTu <codingtu@spacetu.ai>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+boto3 = "^1.35.68"
+awscli = "^1.36.9"
+acl-anthology-py = "^0.4.3"
+pandas = "^2.2.3"
+tqdm = "^4.67.1"
+keybert = "^0.8.5"
+nltk = "^3.9.1"
+ipykernel = "^6.29.5"
+langchain = "^0.3.12"
+langchain-core = "^0.3.25"
+langchain-openai = "^0.2.12"
+pytest = "^8.3.4"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
