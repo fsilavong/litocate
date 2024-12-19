@@ -68,15 +68,7 @@ class PubMedClient:
             abstract_match = keyword_exist(content, keywords)
 
         if title_match or abstract_match:
-            return Paper(
-                title = xml_obj.title,
-                abstract = xml_obj.abstract,
-                is_peer_reviewed = xml_obj.peer_reviewed,
-                metadata = {
-                    's3_key': obj_key,
-                    'doi': xml_obj.doi
-                }
-            )   
+            return Paper.from_pubmed_article(xml_obj)
         return None
 
     def find_papers(self, keywords, pub_after_year=2021, max_threads=MAX_POOL_CONNECTIONS):

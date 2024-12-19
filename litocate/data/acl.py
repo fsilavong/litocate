@@ -15,17 +15,6 @@ class AnthologyClient:
     def __init__(self):
         self.client = Anthology.from_repo()
     
-    def _format_output(acl_paper):
-        return Paper(
-            title= acl_paper.title.as_text(),
-            abstract = {
-                'abstract': acl_paper.abstract.as_text() if acl_paper.abstract else None
-            },
-            is_peer_reviewed = True,
-            metadata= {
-                'bibtext': acl_paper.to_bibtex(),
-        })
-
     @staticmethod
     def _meet_criteria(text, pub_year, keywords, pub_after_year):
         has_keyword = keyword_exist(text, keywords)
@@ -48,7 +37,7 @@ class AnthologyClient:
                 )
             
             if title_match or abstract_match:
-                papers_found.append(self.create_paper_obj(acl_paper))
+                papers_found.append(Paper.from_acl_paper(acl_paper))
         return papers_found
 
     def find_papers_updated_after(self, datetime_str, keywords, pub_after_year):
