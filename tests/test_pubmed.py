@@ -19,6 +19,12 @@ class PubMedArticleTestCase(unittest.TestCase):
             article.doi, '10.18653/v1/2022.acl-long.506'
         )
         self.assertEqual(
+            article.pmid, '36404800'
+        )
+        self.assertEqual(
+            article.pmc, '9671157'
+        )
+        self.assertEqual(
             int(article.pub_year), 2022
         )
         self.assertEqual(
@@ -40,6 +46,12 @@ class PubMedArticleTestCase(unittest.TestCase):
             article.doi, '10.3389/fvets.2023.1160163'
         )
         self.assertEqual(
+            article.pmid, None
+        )
+        self.assertEqual(
+            article.pmc, 'PMC10034384'
+        )
+        self.assertEqual(
             int(article.pub_year), 2023
         )
         self.assertEqual(
@@ -48,7 +60,7 @@ class PubMedArticleTestCase(unittest.TestCase):
     
     def test_from_string_invalid(self):
         article = PubMedArticle.from_string('')
-        for attr in ['abstract', 'title', 'doi', 'pub_year', 'peer_reviewed']:
+        for attr in ['abstract', 'title', 'doi', 'pub_year', 'peer_reviewed', 'pmid', 'pmc']:
             self.assertIsNone(getattr(article, attr))
 
 if __name__=='__main__':

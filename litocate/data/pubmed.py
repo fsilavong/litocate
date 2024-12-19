@@ -147,13 +147,17 @@ class PubMedArticle:
         if self._content is not None:
             self.abstract = self.get_abstract_from_xml(self._content)
             self.title = self.get_title(self._content)
-            self.doi = self.get_doi(self._content)
+            self.doi = self.get_article_id(self._content)
+            self.pmid = self.get_article_id(self._content, type='pmid')
+            self.pmc = self.get_article_id(self._content, type='pmc')
             self.pub_year = self.get_pub_year(self._content)
             self.peer_reviewed = self.is_peer_reviewed(self._content)
         else:
             self.abstract = None
             self.title = None
             self.doi = None
+            self.pmid = None
+            self.pmc = None
             self.pub_year = None
             self.peer_reviewed = None
 
@@ -167,10 +171,10 @@ class PubMedArticle:
         return cls(xml_str)
 
     @staticmethod
-    def get_doi(xml):
-        doi_element = xml.xpath("//article-id[@pub-id-type='doi']")
-        if doi_element:
-            return doi_element[0].text
+    def get_article_id(xml, type='doi'):
+        article_id_element = xml.xpath(f"//article-id[@pub-id-type='{type}']")
+        if article_id_element:
+            return article_id_element[0].text
 
     @staticmethod
     def get_abstract_from_xml(xml):

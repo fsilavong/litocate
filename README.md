@@ -7,5 +7,5 @@ poetry install
 ```
 
 ```
-pytest
+poetry run pytest
 ```
