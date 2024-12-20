@@ -18,7 +18,10 @@ class AnthologyClient:
     @staticmethod
     def _meet_criteria(text, pub_year, keywords, pub_after_year):
         has_keyword = keyword_exist(text, keywords)
-        pub_after   = True if pub_year and int(pub_year) >= pub_after_year else False
+        if pub_after_year:
+            pub_after   = True if pub_year and int(pub_year) >= pub_after_year else False
+        else:
+            pub_after = True
         return (has_keyword and pub_after)
 
     def find_papers(self, keywords, pub_after_year=2021, n=None):

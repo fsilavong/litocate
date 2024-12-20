@@ -37,6 +37,8 @@ class Paper:
             is_peer_reviewed = True,
             metadata= {
                 'bibtext': acl_paper.to_bibtex(),
+                'anthology_id': acl_paper.full_id,
+                'url': f'https://aclanthology.org/{acl_paper.full_id}' if acl_paper.full_id else None
         })
         
     def as_json(self):
