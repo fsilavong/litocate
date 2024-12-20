@@ -8,6 +8,13 @@ class Paper:
     metadata: dict
     
     def from_pubmed_article(article):
+        if article.pmid:
+            url = f"https://pubmed.ncbi.nlm.nih.gov/{article.pmid}/"
+        elif article.pmc:
+            url = f"https://pmc.ncbi.nlm.nih.gov/articles/{article.pmc}/"
+        else:
+            url = None
+        
         return Paper(
             title=article.title,
             abstract=article.abstract,
@@ -16,7 +23,8 @@ class Paper:
                 'doi': article.doi,
                 'pmid': article.pmid,
                 'pmc': article.pmc,
-                'pub_year': article.pub_year
+                'pub_year': article.pub_year,
+                'url': url 
             }
         )
     
