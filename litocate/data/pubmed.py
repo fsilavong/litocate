@@ -71,7 +71,7 @@ class PubMedClient:
             return Paper.from_pubmed_article(xml_obj)
         return None
 
-    def find_papers(self, keywords, pub_after_year=2021, max_threads=MAX_POOL_CONNECTIONS):
+    def find_papers(self, keywords, pub_after_year=2021, max_threads=MAX_POOL_CONNECTIONS, n=None):
         papers = []
         
         try:
@@ -85,8 +85,10 @@ class PubMedClient:
                     if 'Contents' not in page:
                         logger.info("No files found in the bucket.")
                         continue
+                    if n and total_files >= n:
+                        break
+                    
                     total_files += len(page['Contents'])
-
                     for obj in page['Contents']:
                         futures.append(
                             executor.submit(self._find_papers, obj['Key'], keywords, pub_after_year)

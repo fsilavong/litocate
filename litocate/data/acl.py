@@ -21,9 +21,9 @@ class AnthologyClient:
         pub_after   = True if pub_year and int(pub_year) >= pub_after_year else False
         return (has_keyword and pub_after)
 
-    def find_papers(self, keywords, pub_after_year=2021):
+    def find_papers(self, keywords, pub_after_year=2021, n=None):
         papers_found = []
-        for acl_paper in self.client.papers():
+        for idx, acl_paper in enumerate(self.client.papers()):
             title = acl_paper.title
             title_match, abstract_match = False, False
             if title:
@@ -38,6 +38,9 @@ class AnthologyClient:
             
             if title_match or abstract_match:
                 papers_found.append(Paper.from_acl_paper(acl_paper))
+            if n and idx >= n:
+                break
+
         return papers_found
 
     def find_papers_updated_after(self, datetime_str, keywords, pub_after_year):
