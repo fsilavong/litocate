@@ -1,14 +1,11 @@
 import datetime
 import json
 
-from litocate.data.constant import PUBMED_FOLDERS
 from litocate.data.utils import compound_token_match
 from litocate.data.constant import DS_FORMAT, LAST_UPDATE_KEY, RESULT_KEY
 from litocate.llm.filter import LLMClassifier
 
-results = []
-for folder in PUBMED_FOLDERS:
-    results.extend(json.load(open(f'../result_from_{folder}.json')))
+results = json.load(open(f'result.json'))['results']
     
 compound_keywords = [
    ['text simplification', 'sentence simplification', 'text style transfer',
@@ -21,16 +18,20 @@ count = 0
 filtered_results = []
 for r in results:
     matches = []
-    matches.append(compound_token_match(
-        r['title'], compound_keywords
-    ))
+    if r['title']:
+        matches.append(compound_token_match(
+            r['title'], compound_keywords
+        ))
     if r['abstract']:
         for content in r['abstract'].values():
+            if not content:
+                continue
             matches.append(compound_token_match(
                 content, compound_keywords
             ))
     if any(matches):
         filtered_results.append(r)
+print(f"After Keyword Filter: {len(filtered_results)}")
 
 classifier = LLMClassifier()
 for r in filtered_results:

@@ -6,8 +6,6 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
 from pydantic import BaseModel, Field
 
-from litocate.llm.prompts import classify_prompt
-
 if not os.environ.get("OPENAI_API_KEY"):
   os.environ["OPENAI_API_KEY"] = getpass.getpass("Enter API key for OpenAI: ")
 
@@ -16,11 +14,11 @@ class Classification(BaseModel):
 
 class LLMClassifier:
     
-    def __init__(self):
-        self.llm = ChatOpenAI(model="gpt-4o-mini").with_structured_output(
+    def __init__(self, prompt):
+        self.llm = ChatOpenAI(model="gpt-4o").with_structured_output(
             Classification
         )
-        self.tagging_prompt = ChatPromptTemplate.from_template(classify_prompt)
+        self.tagging_prompt = ChatPromptTemplate.from_template(prompt)
 
     def classify(self, passage: str):
         prompt = self.tagging_prompt.invoke(input=passage)
@@ -28,7 +26,14 @@ class LLMClassifier:
 
 
 if __name__ == "__main__":
-    classifier = LLMClassifier()
+
+    classify_prompt ="""
+    Identify and review passage to determine if it is related to biomedical/healthcare text simplification that use Large Language Model, or Natural Language Processing techniques, focusing on methods (including automated evaluation), datasets (e.g., PubMed, clinical notes, UMLS), target audiences (patients, professionals), and measurable impact on readability and real-world usability.
+
+    Passage:
+    {input}
+    """
+    classifier = LLMClassifier(classify_prompt)
     passage = 'Improved readability and functions needed for mHealth apps targeting patients with heart failure: An app store review'
     assert classifier.classify(passage).relevant == True
     
