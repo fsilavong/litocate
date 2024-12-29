@@ -112,13 +112,14 @@ class PubMedClient:
 
     def get_metadata_file(self):
         import pandas as pd
+        from io import BytesIO
         key = f'{self.folder}/xml/metadata/csv/{self.folder}.filelist.csv'
-        csv_str = self.get(key)
-        # write a tempfilename from csv str
-        df = pd.read_csv(tmpfilename)
+        csv_bytes = self.get(key)
+        df = pd.read_csv(BytesIO(csv_bytes))
         return df 
     
     def find_papers_updated_after(self, datetime_str, keywords, pub_after_year):
+        import pandas as pd
         try:
             last_updated = datetime.datetime.strptime(datetime_str, DS_FORMAT)
         except Exception as e:
@@ -127,6 +128,7 @@ class PubMedClient:
             )
         DATE_COLUMN = 'Last Updated UTC (YYYY-MM-DD HH:MM:SS)'
         df = self.get_metadata_file()
+        df[DATE_COLUMN] = pd.to_datetime(df[DATE_COLUMN])
         papers = []
         for key in df[df[DATE_COLUMN] > last_updated]['Key'].tolist():
             paper = self._find_papers(key, keywords, pub_after_year)
