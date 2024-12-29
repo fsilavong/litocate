@@ -38,7 +38,7 @@ class Paper:
             metadata= {
                 'bibtext': acl_paper.to_bibtex(),
                 'anthology_id': acl_paper.full_id,
-                'pub_year': acl_paper.pub_year,
+                'pub_year': acl_paper.year,
                 'url': f'https://aclanthology.org/{acl_paper.full_id}' if acl_paper.full_id else None
         })
         
