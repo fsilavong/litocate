@@ -49,3 +49,6 @@ class Paper:
             'is_peer_reviewed': self.is_peer_reviewed,
             'metadata': self.metadata
         }
+
+    def __getitem__(self, key):
+        return getattr(self, key)
