@@ -45,6 +45,8 @@ acl_result = AnthologyClient().find_papers(
 print(acl_result[0].title, acl_result[0].abstract)
 ```
 
+For more advanced usage example, see (awesome-medical-text-simplification)[https://github.com/fsilavong/awesome-medical-text-simplification/tree/main].
+
 ## Developer Guide
 
 To run unit test, 
@@ -52,3 +54,4 @@ To run unit test,
 ```
 poetry run pytest
 ```
+
