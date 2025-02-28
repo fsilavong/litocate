@@ -18,11 +18,10 @@ langchain = "^0.3.12"
 langchain-core = "^0.3.25"
 langchain-openai = "^0.3.7"
 pytest = "^8.3.4"
+acl-anthology-py = { version = "^0.4.3", optional = true }
 
-[project.optional-dependencies]
-acl = [
-    acl-anthology-py = "^0.4.3"
-]
+[tool.poetry.extras]
+acl = ["acl-anthology-py"]
 
 [build-system]
 requires = ["poetry-core"]
