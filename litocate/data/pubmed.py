@@ -24,7 +24,7 @@ ABSTRACT_TAG = 'abstract'
 MAX_POOL_CONNECTIONS = 1000
 
 class PubMedClient:
-    def __init__(self, folder=None):
+    def __init__(self, folder=None, lower_case=True):
         self.s3 = boto3.client('s3', config=Config(
                 signature_version=UNSIGNED, 
                 max_pool_connections=MAX_POOL_CONNECTIONS
@@ -33,6 +33,7 @@ class PubMedClient:
         self.bucket_name = 'pmc-oa-opendata'
         self.folder = folder if folder else 'oa_comm'
         self.prefix = f'{folder}/xml/all'
+        self.lower_case = lower_case
 
     def get(self, key):        
         try:
@@ -64,10 +65,10 @@ class PubMedClient:
 
         if xml_obj.title:
             content = xml_obj.title
-            title_match = keyword_exist(content, keywords)
+            title_match = keyword_exist(content, keywords, self.lower_case)
         if xml_obj.abstract:
             content = " ".join(xml_obj.abstract.values())
-            abstract_match = keyword_exist(content, keywords)
+            abstract_match = keyword_exist(content, keywords, self.lower_case)
 
         if title_match or abstract_match:
             return Paper.from_pubmed_article(xml_obj)
