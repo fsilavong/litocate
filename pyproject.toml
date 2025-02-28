@@ -9,7 +9,6 @@ readme = "README.md"
 python = "^3.12"
 boto3 = "^1.35.68"
 awscli = "^1.36.9"
-acl-anthology-py = "^0.4.3"
 pandas = "^2.2.3"
 tqdm = "^4.67.1"
 keybert = "^0.8.5"
@@ -20,6 +19,10 @@ langchain-core = "^0.3.25"
 langchain-openai = "^0.3.7"
 pytest = "^8.3.4"
 
+[project.optional-dependencies]
+acl = [
+    acl-anthology-py = "^0.4.3"
+]
 
 [build-system]
 requires = ["poetry-core"]
