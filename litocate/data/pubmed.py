@@ -57,14 +57,16 @@ class PubMedClient:
             return None
         if xml_obj.pub_year is None:
             return None
-        elif xml_obj.pub_year and int(xml_obj.pub_year) < pub_after_year:
+        elif xml_obj.pub_year is None or (
+            pub_after_year is not None and int(xml_obj.pub_year) < pub_after_year
+        ):
             return None
 
         if xml_obj.title:
-            content = xml_obj.title.lower()
+            content = xml_obj.title
             title_match = keyword_exist(content, keywords)
         if xml_obj.abstract:
-            content = " ".join(xml_obj.abstract.values()).lower()
+            content = " ".join(xml_obj.abstract.values())
             abstract_match = keyword_exist(content, keywords)
 
         if title_match or abstract_match:

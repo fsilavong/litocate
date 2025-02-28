@@ -5,9 +5,12 @@ from nltk.tokenize import word_tokenize
 from nltk.util import ngrams
 from nltk.stem.porter import PorterStemmer
 
-def keyword_exist(string, keywords):
+def keyword_exist(string, keywords, lower=True):
+    if lower:
+        string = string.lower()
+        keywords = [k.lower() for k in keywords]
     for keyword in keywords:
-        if keyword.lower() in string.lower():
+        if keyword in string:
             return True
     return False
 
