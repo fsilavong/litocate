@@ -121,7 +121,7 @@ class PubMedClient:
         df = pd.read_csv(BytesIO(csv_bytes))
         return df 
     
-    def find_papers_updated_after(self, datetime_str, keywords, pub_after_year):
+    def find_papers_updated_after(self, datetime_str, keywords, pub_after_year, max_threads=MAX_POOL_CONNECTIONS):
         import pandas as pd
         try:
             last_updated = datetime.datetime.strptime(datetime_str, DS_FORMAT)
@@ -133,10 +133,24 @@ class PubMedClient:
         df = self.get_metadata_file()
         df[DATE_COLUMN] = pd.to_datetime(df[DATE_COLUMN])
         papers = []
-        for key in df[df[DATE_COLUMN] > last_updated]['Key'].tolist():
-            paper = self._find_papers(key, keywords, pub_after_year)
-            if paper:
-                papers.append(paper)
+        with concurrent.futures.ThreadPoolExecutor(max_workers=max_threads) as executor:
+            futures = []
+
+            for key in df[df[DATE_COLUMN] > last_updated]['Key'].tolist():
+                futures.append(
+                    executor.submit(self._find_papers, key, keywords, pub_after_year)
+                )
+                
+        with tqdm(total=df.shape[0], desc="Processing files") as pbar: 
+            for future in concurrent.futures.as_completed(futures):
+                try:
+                    result = future.result()
+                    if result:
+                        papers.append(result)
+                except Exception as e:
+                    logger.error(f"Error processing a file: {e}", exc_info=True)
+                finally:
+                    pbar.update(1)  # Update progress bar after each task
         return papers
 
 class PubMedArticle:
