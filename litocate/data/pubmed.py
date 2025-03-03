@@ -133,6 +133,7 @@ class PubMedClient:
         df = self.get_metadata_file()
         df[DATE_COLUMN] = pd.to_datetime(df[DATE_COLUMN])
         papers = []
+        
         with concurrent.futures.ThreadPoolExecutor(max_workers=max_threads) as executor:
             futures = []
 
@@ -140,8 +141,9 @@ class PubMedClient:
                 futures.append(
                     executor.submit(self._find_papers, key, keywords, pub_after_year)
                 )
-                
-        with tqdm(total=df.shape[0], desc="Processing files") as pbar: 
+        shape = df.shape[0]
+        del df
+        with tqdm(total=shape, desc="Processing files") as pbar: 
             for future in concurrent.futures.as_completed(futures):
                 try:
                     result = future.result()
