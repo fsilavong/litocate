@@ -32,7 +32,7 @@ class PubMedClient:
         )
         self.bucket_name = 'pmc-oa-opendata'
         self.folder = folder if folder else 'oa_comm'
-        self.prefix = f'{folder}/xml/all'
+        self.prefix = f'{self.folder}/xml/all'
         self.lower_case = lower_case
 
     def get(self, key):        
