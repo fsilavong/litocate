@@ -1,8 +1,11 @@
-import json
+import io
+import os
+import csv
 import datetime
 import logging
 import concurrent.futures
 from tqdm import tqdm
+from typing import List
 
 import boto3
 from botocore.config import Config
@@ -21,7 +24,7 @@ logger = logging.getLogger()
 
 
 ABSTRACT_TAG = 'abstract'
-MAX_POOL_CONNECTIONS = 1000
+MAX_POOL_CONNECTIONS = min(32, (os.cpu_count() or 1) * 2)
 
 class PubMedClient:
     def __init__(self, folder=None, lower_case=True):
@@ -114,36 +117,47 @@ class PubMedClient:
             return []
 
     def get_metadata_file(self):
-        import pandas as pd
-        from io import BytesIO
         key = f'{self.folder}/xml/metadata/csv/{self.folder}.filelist.csv'
         csv_bytes = self.get(key)
-        df = pd.read_csv(BytesIO(csv_bytes))
-        return df 
+        return io.BytesIO(csv_bytes)
     
-    def find_papers_updated_after(self, datetime_str, keywords, pub_after_year, max_threads=MAX_POOL_CONNECTIONS):
-        import pandas as pd
+    def _parse_dt(self, datetime_str):
         try:
-            last_updated = datetime.datetime.strptime(datetime_str, DS_FORMAT)
+            return datetime.datetime.strptime(datetime_str, DS_FORMAT)
         except Exception as e:
             raise Exception(
                 f'Error in parsing datetime string {e} - Expect format {DS_FORMAT}'
             )
+
+    def _find_papers_updated_after(self, bytes_io: bytes, date_after: datetime.datetime):
+        keys = []
         DATE_COLUMN = 'Last Updated UTC (YYYY-MM-DD HH:MM:SS)'
-        df = self.get_metadata_file()
-        df[DATE_COLUMN] = pd.to_datetime(df[DATE_COLUMN])
+        
+        with io.TextIOWrapper(bytes_io, encoding="utf-8") as text_io:
+            reader = csv.DictReader(text_io)
+            for row in reader:
+                last_updated = self._parse_dt(row[DATE_COLUMN])
+                if last_updated > date_after:
+                    keys.append(row['Key'])
+        return keys
+    
+    def find_papers_updated_after(
+        self, date_after: datetime.datetime, keywords: List[str], pub_after_year, max_threads=MAX_POOL_CONNECTIONS, n: int = None
+    ):
+
+        metadata = self.get_metadata_file()
+        keys = self._find_papers_updated_after(metadata, date_after)
         papers = []
         
         with concurrent.futures.ThreadPoolExecutor(max_workers=max_threads) as executor:
             futures = []
 
-            for key in df[df[DATE_COLUMN] > last_updated]['Key'].tolist():
+            for key in keys:
                 futures.append(
                     executor.submit(self._find_papers, key, keywords, pub_after_year)
                 )
-        shape = df[df[DATE_COLUMN] > last_updated].shape[0]
-        del df
-        with tqdm(total=shape, desc="Processing files") as pbar: 
+
+        with tqdm(total=len(keys), desc="Processing files") as pbar: 
             for future in concurrent.futures.as_completed(futures):
                 try:
                     result = future.result()
@@ -154,6 +168,7 @@ class PubMedClient:
                 finally:
                     pbar.update(1)  # Update progress bar after each task
         return papers
+
 
 class PubMedArticle:
     
@@ -167,6 +182,7 @@ class PubMedArticle:
             self.pmc = self.get_article_id(self._content, type='pmc')
             self.pub_year = self.get_pub_year(self._content)
             self.peer_reviewed = self.is_peer_reviewed(self._content)
+            self.journal = self.get_journal(self._content)
         else:
             self.abstract = None
             self.title = None
@@ -175,6 +191,7 @@ class PubMedArticle:
             self.pmc = None
             self.pub_year = None
             self.peer_reviewed = None
+            self.journal = None
 
     @classmethod
     def from_string(cls, xml_str):
@@ -252,3 +269,8 @@ class PubMedArticle:
     def is_peer_reviewed(xml):
         journals = xml.xpath("//journal-meta")
         return True if journals else False
+    
+    @staticmethod
+    def get_journal(xml):
+        journals = xml.xpath(".//journal-title")
+        return journals[0].text if journals else None

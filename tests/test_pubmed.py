@@ -1,4 +1,6 @@
+import io 
 import unittest
+from datetime import datetime
 
 from litocate.data.pubmed import PubMedClient, PubMedArticle
 
@@ -30,6 +32,9 @@ class PubMedArticleTestCase(unittest.TestCase):
         self.assertEqual(
             article.peer_reviewed, True
         )
+        self.assertEqual(
+            article.journal, 'Proceedings of the conference. Association for Computational Linguistics. Meeting'
+        )
     
     def test_from_string_valid_2(self):
         xml_str = open('tests/data/PMC10034384.xml').read()
@@ -57,11 +62,23 @@ class PubMedArticleTestCase(unittest.TestCase):
         self.assertEqual(
             article.peer_reviewed, True
         )
+        self.assertEqual(
+            article.journal, 'Frontiers in Veterinary Science'
+        )
     
     def test_from_string_invalid(self):
         article = PubMedArticle.from_string('')
-        for attr in ['abstract', 'title', 'doi', 'pub_year', 'peer_reviewed', 'pmid', 'pmc']:
+        for attr in ['abstract', 'title', 'doi', 'pub_year', 'peer_reviewed', 'pmid', 'pmc', 'journal']:
             self.assertIsNone(getattr(article, attr))
 
+    def test_find_papers_update_after(self):
+        byte_io = io.BytesIO(open('tests/data/oa_comm.small.filelist.csv', 'rb').read())
+        client = PubMedClient()
+        date_after = datetime(2023, 7, 20)
+        papers = client._find_papers_updated_after(
+            byte_io, date_after
+        )
+        assert len(papers) == 7
+        
 if __name__=='__main__':
     unittest.main()
