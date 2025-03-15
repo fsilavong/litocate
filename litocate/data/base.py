@@ -24,7 +24,8 @@ class Paper:
                 'pmid': article.pmid,
                 'pmc': article.pmc,
                 'pub_year': article.pub_year,
-                'url': url 
+                'url': url,
+                'journal': article.journal
             }
         )
     

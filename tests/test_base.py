@@ -20,7 +20,8 @@ class BaseTestCase(unittest.TestCase):
                     'pmid': None, 
                     'pmc': 'PMC10034384', 
                     'pub_year': '2023', 
-                    'url': "https://pmc.ncbi.nlm.nih.gov/articles/PMC10034384/"
+                    'url': "https://pmc.ncbi.nlm.nih.gov/articles/PMC10034384/",
+                    'journal': 'Frontiers in Veterinary Science'
                 }
             }
         )
