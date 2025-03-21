@@ -183,6 +183,7 @@ class PubMedArticle:
             self.pub_year = self.get_pub_year(self._content)
             self.peer_reviewed = self.is_peer_reviewed(self._content)
             self.journal = self.get_journal(self._content)
+            self.pub_dt = self.get_pub_date(self._content)
         else:
             self.abstract = None
             self.title = None
@@ -192,6 +193,7 @@ class PubMedArticle:
             self.pub_year = None
             self.peer_reviewed = None
             self.journal = None
+            self.pub_dt = None
 
     @classmethod
     def from_string(cls, xml_str):
@@ -274,3 +276,15 @@ class PubMedArticle:
     def get_journal(xml):
         journals = xml.xpath(".//journal-title")
         return journals[0].text if journals else None
+
+    @staticmethod
+    def get_pub_date(xml):
+        for pub_date in xml.xpath('//pub-date'):
+            year = pub_date.findtext('year')
+            month = pub_date.findtext('month', default='01')
+            day = pub_date.findtext('day', default='01')
+            if year:
+                month = month.zfill(2)
+                day = day.zfill(2)
+                return f"{year}-{month}-{day}"
+        return None

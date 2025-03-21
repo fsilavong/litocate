@@ -35,6 +35,9 @@ class PubMedArticleTestCase(unittest.TestCase):
         self.assertEqual(
             article.journal, 'Proceedings of the conference. Association for Computational Linguistics. Meeting'
         )
+        self.assertEqual(
+            article.pub_dt, '2022-11-05'
+        )
     
     def test_from_string_valid_2(self):
         xml_str = open('tests/data/PMC10034384.xml').read()
@@ -64,6 +67,9 @@ class PubMedArticleTestCase(unittest.TestCase):
         )
         self.assertEqual(
             article.journal, 'Frontiers in Veterinary Science'
+        )
+        self.assertEqual(
+            article.pub_dt, '2023-03-09'
         )
     
     def test_from_string_invalid(self):
